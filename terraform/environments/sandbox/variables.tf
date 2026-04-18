@@ -8,8 +8,18 @@ variable "public_subnet_cidr" {
     type = string
 }
 
+variable "public_subnet_az" {
+    description = "Public Subnet Availability Zone"
+    type = string
+}
+
 variable "private_subnet_cidr" {
     description = "Private Subnet CIDR IP"
+    type = string
+}
+
+variable "private_subnet_az" {
+    description = "Private Subnet Availability Zone"
     type = string
 }
 
