@@ -6,3 +6,6 @@ private_subnet_cidr1 = "10.0.3.0/24"
 private_subnet_cidr2 = "10.0.4.0/24"
 az1 = "us-east-1a"
 az2 = "us-east-1b"
+
+
+// PHASE 2
