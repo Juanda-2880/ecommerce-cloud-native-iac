@@ -1,4 +1,19 @@
+locals {
+    name_prefix = "ecommerce"
+    final_snapshot_id = var.skip_final_snapshot ? null : (
+    var.final_snapshot_identifier != "" ? var.final_snapshot_identifier : "${local.name_prefix}-final-snapshot"
+  )
+  tags = {
+    Environment = terraform.workspace
+    Project     = "Ecommerce Cloud Native"
+  }
+}
+
+
 resource "aws_db_instance" "principal_rds" {
+    username = var.db_username
+    password = var.db_password
+    db_name = var.db_name
     identifier = "principal-rds"
     engine = var.db_engine
     engine_version = var.db_engine_version
@@ -11,13 +26,13 @@ resource "aws_db_instance" "principal_rds" {
     vpc_security_group_ids = [aws_security_group.rds.id]
     publicly_accessible = false
     multi_az = false
-    parameter_group_name = aws_db_parameter_group.db_parammeter.name
+    parameter_group_name = aws_db_parameter_group.db_parameter.name
     backup_retention_period = 7
     backup_window = "03:00-04:00"
     maintenance_window = "Mon:04:00-Mon:05:00"
     auto_minor_version_upgrade = true
-    monitoring_interval = var.monitoring_interval
-    monitoring_role_arn = var.monitoring_interval > 0 ? aws_iam_role.rds_monitoring[0].arn : null
+    monitoring_interval = 0
+    monitoring_role_arn = null
     performance_insights_enabled = false
     enabled_cloudwatch_logs_exports = var.enabled_cloudwatch_logs_exports
     deletion_protection = var.deletion_protection
@@ -31,7 +46,7 @@ resource "aws_db_instance" "principal_rds" {
 
     depends_on = [ 
         aws_db_subnet_group.db_subnet,
-        aws_db_parameter_group.db_parammeter,
+        aws_db_parameter_group.db_parameter,
      ]
 
     

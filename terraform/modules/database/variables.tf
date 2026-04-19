@@ -68,29 +68,35 @@ variable "deletion_protection" {
 variable "final_snapshot_identifier" {
   description = "Name of the final snapshot (only applies if skip_final_snapshot = false)"
   type        = string
-  default     = ""
+  default     = "my-db-snapshot"
 }
 
 variable "db_name" {
-  description = "Nombre de la base de datos inicial a crear"
+  description = "Name of the initial database to create"
   type        = string
   default     = "ecommerce_db"
 }
 
 variable "db_username" {
-  description = "Nombre de usuario maestro de la base de datos"
+  description = "Master user name for the database"
   type        = string
   default     = "admin"
   sensitive   = true
 }
 
 variable "db_password" {
-  description = "Contraseña del usuario maestro. Mínimo 8 caracteres"
+  description = "Password for the master user. Minimum 8 characters"
   type        = string
   sensitive   = true
 
   validation {
     condition     = length(var.db_password) >= 8
-    error_message = "La contraseña debe tener al menos 8 caracteres."
+    error_message = "The password must be at least 8 characters long."
   }
+}
+
+variable "skip_final_snapshot" {
+  description = "Omit final snapshot when deleting the instance"
+  type        = bool
+  default     = true # true en sandbox
 }

@@ -1,4 +1,4 @@
-resource "aws_db_parameter_group" "db_parammeter" {
+resource "aws_db_parameter_group" "db_parameter" {
     name = "db-params"
     family = var.db_engine == "mysql" ? "mysql8.0" : (var.db_engine == "postgres" ? "postgres15" : "mariadb10.6")
     description = "Custom parameter group for RDS instance"
