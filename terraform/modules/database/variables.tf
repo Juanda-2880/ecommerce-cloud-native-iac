@@ -29,3 +29,9 @@ variable "db_engine" {
     error_message = "The motor must be 'mysql', 'postgres' or 'mariadb'."
   }
 }
+
+variable "monitoring_interval" {
+  description = "Intervalo en segundos para Enhanced Monitoring (0 = deshabilitado)"
+  type        = number
+  default     = 60
+}
