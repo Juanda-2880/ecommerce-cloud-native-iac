@@ -9,7 +9,12 @@ variable "app_security_group_id" {
     default = ""
 }
 
-variable "private_subnet_ids" {
-  description = "List of private subnet IDs for RDS subnet group"
-  type        = list(string)
+variable "vpc_id" {
+    description = "VPC ID for RDS instance"
+    type = string
+}
+
+variable "subnet_ids" {
+    description = "Subnet IDs for RDS instance"
+    type = list(string)
 }

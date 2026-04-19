@@ -15,5 +15,7 @@ module "networking" {
 module "database" {
     source = "../../modules/database"
     dbport = var.dbport
-    app_security_group_id = module.app.app_security_group_id
+    app_security_group_id = var.app_security_group_id
+    vpc_id = module.networking.vpc_id
+    subnet_ids = module.networking.private_subnet_ids
 }
