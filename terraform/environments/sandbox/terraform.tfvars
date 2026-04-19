@@ -9,3 +9,5 @@ az2 = "us-east-1b"
 
 
 // PHASE 2
+
+dbport = 3306

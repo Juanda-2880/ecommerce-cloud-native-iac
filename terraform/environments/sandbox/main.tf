@@ -11,3 +11,9 @@ module "networking" {
 }
 
 // PHASE 2
+
+module "database" {
+    source = "../../modules/database"
+    dbport = var.dbport
+    app_security_group_id = module.app.app_security_group_id
+}
