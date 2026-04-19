@@ -1,45 +1,3 @@
-variable "region" {
-    description = "AWS Region"
-    type = string
-}
-variable "vpc_cidr" {
-    description = "Core VPC CIDR IP"
-    type = string
-}
-
-variable "public_subnet_cidr1" {
-    description = "Public Subnet CIDR IP"
-    type = string
-}
-
-variable "public_subnet_cidr2" {
-    description = "Public Subnet CIDR IP"
-    type = string
-}
-
-variable "az1" {
-    description = "Availability Zone us-east-1a"
-    type = string
-}
-
-variable "private_subnet_cidr1" {
-    description = "Private Subnet CIDR IP"
-    type = string
-}
-
-variable "private_subnet_cidr2" {
-    description = "Private Subnet CIDR IP"
-    type = string
-}
-
-
-variable "az2" {
-    description = "Availability Zone us-east-1b"
-    type = string
-}
-
-// PHASE 2
-
 variable "dbport" {
     description = "Port for RDS instance"
     type = number
@@ -49,6 +7,16 @@ variable "app_security_group_id" {
     description = "Permit Access to RDS"
     type = string
     default = ""
+}
+
+variable "vpc_id" {
+    description = "VPC ID for RDS instance"
+    type = string
+}
+
+variable "subnet_ids" {
+    description = "Subnet IDs for RDS instance"
+    type = list(string)
 }
 
 variable "db_engine" {
@@ -75,7 +43,7 @@ variable "db_engine_version" {
 }
 
 variable "db_instance_class" {
-  description = "Clase de instancia RDS. NOTA SANDBOX: Solo db.t3.micro o db.t3.medium"
+  description = "Class of the RDS instance. NOTE SANDBOX: Only db.t3.micro or db.t3.medium"
   type        = string
   default     = "db.t3.micro"
 
@@ -95,6 +63,12 @@ variable "deletion_protection" {
   description = "Enable protection against accidental deletion"
   type        = bool
   default     = false 
+}
+
+variable "final_snapshot_identifier" {
+  description = "Name of the final snapshot (only applies if skip_final_snapshot = false)"
+  type        = string
+  default     = "my-db-snapshot"
 }
 
 variable "db_name" {
@@ -124,13 +98,5 @@ variable "db_password" {
 variable "skip_final_snapshot" {
   description = "Omit final snapshot when deleting the instance"
   type        = bool
-  default     = true 
+  default     = true # true en sandbox
 }
-
-variable "final_snapshot_identifier" {
-  description = "Name of the final snapshot (only applies if skip_final_snapshot = false)"
-  type        = string
-  default     = "my-db-snapshot"
-}
-
-
