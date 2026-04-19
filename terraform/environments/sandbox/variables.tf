@@ -50,3 +50,14 @@ variable "app_security_group_id" {
     type = string
     default = ""
 }
+
+variable "db_engine" {
+  description = "Motor de base de datos (mysql, postgres, mariadb)"
+  type        = string
+  default     = "mysql"
+
+  validation {
+    condition     = contains(["mysql", "postgres", "mariadb"], var.db_engine)
+    error_message = "The motor must be 'mysql', 'postgres' or 'mariadb'."
+  }
+}

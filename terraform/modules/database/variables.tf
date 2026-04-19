@@ -18,3 +18,14 @@ variable "subnet_ids" {
     description = "Subnet IDs for RDS instance"
     type = list(string)
 }
+
+variable "db_engine" {
+  description = "Motor de base de datos (mysql, postgres, mariadb)"
+  type        = string
+  default     = "mysql"
+
+  validation {
+    condition     = contains(["mysql", "postgres", "mariadb"], var.db_engine)
+    error_message = "The motor must be 'mysql', 'postgres' or 'mariadb'."
+  }
+}
