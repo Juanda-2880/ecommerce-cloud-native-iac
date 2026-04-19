@@ -31,7 +31,66 @@ variable "db_engine" {
 }
 
 variable "monitoring_interval" {
-  description = "Intervalo en segundos para Enhanced Monitoring (0 = deshabilitado)"
+  description = "Interval for Enhanced Monitoring in seconds. Default is 60 seconds."
   type        = number
   default     = 60
+}
+
+variable "db_engine_version" {
+  description = "Engine version for RDS instance"
+  type        = string
+  default     = "8.0"
+}
+
+variable "db_instance_class" {
+  description = "Class of the RDS instance. NOTE SANDBOX: Only db.t3.micro or db.t3.medium"
+  type        = string
+  default     = "db.t3.micro"
+
+  validation {
+    condition     = contains(["db.t3.micro", "db.t3.small", "db.t3.medium"], var.db_instance_class)
+    error_message = "The sandbox only allows instances of type db.t3.micro, db.t3.small or db.t3.medium."
+  }
+}
+
+variable "enabled_cloudwatch_logs_exports" {
+  description = "List of log types to export to CloudWatch Logs. For MySQL, valid values are 'error', 'general', 'slowquery'. For PostgreSQL, valid values are 'postgresql', 'upgrade'. For MariaDB, valid values are 'error', 'slowquery'."
+  type        = list(string)
+  default     = ["error", "slowquery"] 
+}
+
+variable "deletion_protection" {
+  description = "Enable protection against accidental deletion"
+  type        = bool
+  default     = false 
+}
+
+variable "final_snapshot_identifier" {
+  description = "Name of the final snapshot (only applies if skip_final_snapshot = false)"
+  type        = string
+  default     = ""
+}
+
+variable "db_name" {
+  description = "Nombre de la base de datos inicial a crear"
+  type        = string
+  default     = "ecommerce_db"
+}
+
+variable "db_username" {
+  description = "Nombre de usuario maestro de la base de datos"
+  type        = string
+  default     = "admin"
+  sensitive   = true
+}
+
+variable "db_password" {
+  description = "Contraseña del usuario maestro. Mínimo 8 caracteres"
+  type        = string
+  sensitive   = true
+
+  validation {
+    condition     = length(var.db_password) >= 8
+    error_message = "La contraseña debe tener al menos 8 caracteres."
+  }
 }
