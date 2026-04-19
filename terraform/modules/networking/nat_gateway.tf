@@ -5,7 +5,7 @@ resource "aws_eip" "nat_eip" {
 
 resource "aws_nat_gateway" "core_nat_gateway" {
   allocation_id = aws_eip.nat_eip.id
-  subnet_id = aws_subnet.public_subnet.id
+  subnet_id = aws_subnet.public_subnet1.id
   region = var.region
     tags = {
         Name = "core-nat-gateway"

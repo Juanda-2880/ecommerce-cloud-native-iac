@@ -17,8 +17,8 @@ variable "public_subnet_cidr2" {
     type = string
 }
 
-variable "public_subnet_az" {
-    description = "Public Subnet Availability Zone"
+variable "az1" {
+    description = "Availability Zone us-east-1a"
     type = string
 }
 
@@ -33,8 +33,8 @@ variable "private_subnet_cidr2" {
 }
 
 
-variable "private_subnet_az" {
-    description = "Private Subnet Availability Zone"
+variable "az2" {
+    description = "Availability Zone us-east-1b"
     type = string
 }
 

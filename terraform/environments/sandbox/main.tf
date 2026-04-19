@@ -6,6 +6,6 @@ module "networking" {
     public_subnet_cidr2 = var.public_subnet_cidr2
     private_subnet_cidr1 = var.private_subnet_cidr1
     private_subnet_cidr2 = var.private_subnet_cidr2
-    public_subnet_az = var.public_subnet_az
-    private_subnet_az = var.private_subnet_az
+    az1 = var.az1
+    az2 = var.az2
 }

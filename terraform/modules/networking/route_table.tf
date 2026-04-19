@@ -1,8 +1,8 @@
 resource "aws_route_table" "public_route_table" {
     vpc_id = aws_vpc.core_vpc.id
     route {
-        cidr_block = "0.0.0/0"
-        gateway_id = aws_internet_gateway.igw.id
+        cidr_block = "0.0.0.0/0"
+        gateway_id = aws_internet_gateway.core_igw.id
     }
     tags = {
         Name = "public-route-table"
@@ -23,9 +23,9 @@ resource "aws_route_table_association" "public_subnet2_association" {
 
 resource "aws_route_table" "private_route_table" {
     vpc_id = aws_vpc.core_vpc.id
-    route = {
-        cidr_block = "0.0.0/0"
-        nat_gateway_id = aws_nat_gateway.nat_gw.id
+    route {
+        cidr_block = "0.0.0.0/0"
+        nat_gateway_id = aws_nat_gateway.core_nat_gateway.id
     }
 
     tags = {
