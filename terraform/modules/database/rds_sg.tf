@@ -11,4 +11,11 @@ resource "aws_security_group" "rds" {
         security_groups = var.app_security_group_id != "" ? [var.app_security_group_id] : null
         cidr_blocks     = var.app_security_group_id == "" ? ["10.0.0.0/8"] : null
     }
+    egress {
+        description = "Not Outbound traffic neccesary for RDS"
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
 }
