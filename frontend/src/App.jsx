@@ -1,11 +1,16 @@
 import Navbar from './components/Navbar/Navbar'
+import { Route, Routes } from 'react-router'
+import Layout from './layout/Layout'
+import Home from './pages/Home'
 
 function App() {
     return (
-        <>
-            <Navbar />
-            <h1 className="text-8xl text-red-500">APP</h1>
-        </>
+        <Routes>
+            <Route element={<Layout />}>
+                <Route path="/" element={<Home />}></Route>
+            </Route>
+        </Routes>
     )
 }
+
 export default App
