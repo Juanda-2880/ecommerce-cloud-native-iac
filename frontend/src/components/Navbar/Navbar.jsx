@@ -7,16 +7,17 @@ const Navbar = () => {
     return (
         <header>
             <AuthButtons />
-            <nav className="navbar bs-base-100 shadow-sm lg:rounded-box w-full">
+            <nav className="navbar bg-base-100 shadow-sm lg:rounded-box w-full">
                 <div className="navbar-start">
                     <Link className="btn btn-ghost normal-case text-xl" to="/">
                         Shoply
                     </Link>
                 </div>
-                <div className="navbar-end gap-3"></div>
-                <a className="btn btn-primary">Dashboard</a>
-                <Cart />
-                <UserDropDown />
+                <div className="navbar-end gap-3">
+                    <a className="btn btn-primary">Dashboard</a>
+                    <Cart />
+                    <UserDropDown />
+                </div>
             </nav>
         </header>
     )
