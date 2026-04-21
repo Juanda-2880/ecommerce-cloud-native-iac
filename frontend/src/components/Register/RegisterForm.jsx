@@ -6,10 +6,10 @@ const RegisterForm = () => {
     const {
         register,
         handleSubmit,
-        formState: { error },
+        formState: { errors },
         reset,
     } = useForm({
-        mode: 'onchange', //Real Time Validation
+        mode: 'onChange', //Real Time Validation
     })
     const onSubmit = (data) => {
         //Register user
@@ -18,15 +18,31 @@ const RegisterForm = () => {
     return (
         <form
             onSubmit={handleSubmit(onSubmit)}
-            className="mt-8 flex flex-col gap-4 lg:gap-6 max-w-[500px] max-auto"
+            className="mt-8 flex flex-col gap-4 lg:gap-6 max-w-[500px] mx-auto"
         >
             <div>
                 <input
-                    autoComplete="usernames"
-                    name="username"
+                    {...register('username', {
+                        required: 'Username is required',
+                        minLength: {
+                            value: 3,
+                            message: 'Username must be at least 3 characters',
+                        },
+                        maxLength: {
+                            value: 20,
+                            message: 'Username must be less than 20 characters',
+                        },
+                    })}
+                    className="p-2 outline-2 rounded border focus:outline-primary w-full"
+                    autoComplete="username"
                     placeholder="Username"
                     type="text"
                 />
+                {errors.username && (
+                    <p className="text-red-500 text-sm mt-2 ml-1">
+                        {errors.username.message}
+                    </p>
+                )}
             </div>
         </form>
     )
