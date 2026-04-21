@@ -7,7 +7,9 @@ const AuthButtons = () => {
                 Sign Up
             </Link>
             <div className="hidden lg:block"> | </div>
-            <button className="btn btn-neutral btn-outline">Login</button>
+            <Link to="/login" className="btn btn-neutral btn-outline">
+                Log In
+            </Link>
         </div>
     )
 }
