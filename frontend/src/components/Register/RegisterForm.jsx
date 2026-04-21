@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import { Link } from 'react-router'
 
 const RegisterForm = () => {
     const {
@@ -125,8 +126,14 @@ const RegisterForm = () => {
                 type="submit"
                 className="mt-2 bg-primary text-white p-2 rounded font-bold hover:bg-primary/90 transition-colors cursor-pointer"
             >
-                Register
+                Sign Up
             </button>
+            <p className="text-center text-sm">
+                Already have an account?{' '}
+                <Link to="/login" className="text-primary font-bold hover:underline">
+                    Log In
+                </Link>
+            </p>
         </form>
     )
 }
