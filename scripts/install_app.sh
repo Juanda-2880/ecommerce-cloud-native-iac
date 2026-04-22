@@ -4,7 +4,7 @@ set -euo pipefail
 
 APP_DIR="/opt/ecommerce"
 NODE_VERSION="20"
-REPO_URL="https://github.com/juanda2880/ecommerce-cloud-native.git"  # Actualizar
+REPO_URL="https://github.com/Juanda-2880/ecommerce-cloud-native-iac.git"  # Actualizar
 
 echo "=== [1/5] Actualizando paquetes del sistema ==="
 sudo apt-get update -y
