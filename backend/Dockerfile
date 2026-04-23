@@ -1,16 +1,6 @@
-FROM node:24.14.0
+FROM philippaul/node-mysql-app:02
 
-WORKDIR /app
+# The image philippaul/node-mysql-app:02 already contains the application.
+# Environment variables (DB_HOST, DB_USER, DB_PASS) should be passed at runtime.
 
-# Copy package files first to leverage Docker layer caching
-COPY package.json package-lock.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the source code
-COPY . . 
-
-EXPOSE 5000
-
-CMD ["npm", "run", "dev"]
+EXPOSE 3000
