@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import { Link } from 'react-router'
+import { RegisterService } from '../../services/authService'
 
 const RegisterForm = () => {
     const {
@@ -13,9 +14,21 @@ const RegisterForm = () => {
         mode: 'onChange', //Real Time Validation
     })
     const [showPassword, setShowPassword] = useState(false)
-    const onSubmit = (data) => {
-        reset()
-        //Register user
+    const [loading, setLoading] = useState(false)
+    const [message, setMessage] = useState({ type: '', text: '' })
+
+    const onSubmit = async (data) => {
+        setLoading(true)
+        setMessage({ type: '', text: '' })
+        try {
+            await RegisterService(data)
+            setMessage({ type: 'success', text: 'Registration successful! You can now log in.' })
+            reset()
+        } catch (error) {
+            setMessage({ type: 'error', text: error.message || 'Something went wrong. Please try again.' })
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
@@ -23,6 +36,11 @@ const RegisterForm = () => {
             onSubmit={handleSubmit(onSubmit)}
             className="mt-8 flex flex-col gap-4 lg:gap-6 max-w-[500px] mx-auto"
         >
+            {message.text && (
+                <div className={`p-3 rounded text-sm ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                    {message.text}
+                </div>
+            )}
             <div>
                 <input
                     {...register('username', {

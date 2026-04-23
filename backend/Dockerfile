@@ -1,6 +1,13 @@
-FROM philippaul/node-mysql-app:02
+FROM node:24.14.0
 
-# The image philippaul/node-mysql-app:02 already contains the application.
-# Environment variables (DB_HOST, DB_USER, DB_PASS) should be passed at runtime.
+WORKDIR /app
 
-EXPOSE 3000
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["npm", "start"]
