@@ -1,11 +1,47 @@
 const API_URL = '/api';
 
 export const getProfileService = async () => {
-    // Implement profile retrieval logic if needed
+    try {
+        const response = await fetch(`${API_URL}/profile`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Failed to fetch profile');
+        return data;
+    } catch (error) {
+        console.error('getProfileService error:', error);
+        throw error;
+    }
 }
 
 export const LoginService = async (credentials) => {
-    // Implement login logic if needed
+    try {
+        const response = await fetch(`${API_URL}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(credentials),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Login failed');
+        }
+
+        if (data.token) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+        }
+
+        return data;
+    } catch (error) {
+        console.error('LoginService error:', error);
+        throw error;
+    }
 }
 
 export const RegisterService = async (userData) => {
@@ -32,5 +68,6 @@ export const RegisterService = async (userData) => {
 }
 
 export const LogoutService = async () => {
-    // Implement logout logic if needed
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
 }
