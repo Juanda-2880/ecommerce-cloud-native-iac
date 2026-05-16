@@ -4,10 +4,14 @@ const User = require('../models/userModel');
 const { JWT_SECRET } = require('../middleware/auth');
 
 const signup = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, role } = req.body;
 
-  if (!username || !email || !password) {
-    return res.status(400).json({ error: 'All fields are required' });
+  if (!username || !email || !password || !role) {
+    return res.status(400).json({ error: 'All fields are required, including role' });
+  }
+
+  if (!['buyer', 'salesperson'].includes(role)) {
+    return res.status(400).json({ error: 'Invalid role selected' });
   }
 
   try {
@@ -21,15 +25,15 @@ const signup = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const userId = await User.create(username, email, hashedPassword);
+    const userId = await User.create(username, email, hashedPassword, role);
 
-    // Auto-login: Create token after signup
-    const token = jwt.sign({ id: userId, username }, JWT_SECRET, { expiresIn: '1h' });
+    // Auto-login after signup
+    const token = jwt.sign({ id: userId, username, role }, JWT_SECRET, { expiresIn: '1h' });
 
     res.cookie('token', token, { httpOnly: true }).status(201).json({
       message: 'User registered and logged in successfully!',
       token,
-      user: { id: userId, username, email }
+      user: { id: userId, username, email, role }
     });
   } catch (err) {
     console.error('Signup error:', err);
@@ -56,12 +60,12 @@ const login = async (req, res) => {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
 
-    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
 
     res.cookie('token', token, { httpOnly: true }).json({
       message: 'Logged in successfully!',
       token,
-      user: { id: user.id, username: user.username, email: user.email }
+      user: { id: user.id, username: user.username, email: user.email, role: user.role }
     });
   } catch (err) {
     console.error('Login error:', err);

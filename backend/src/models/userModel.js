@@ -12,16 +12,37 @@ const User = {
   },
 
   findById: async (id) => {
-    const [rows] = await pool.query('SELECT id, username, email FROM users WHERE id = ?', [id]);
+    const [rows] = await pool.query('SELECT id, username, email, role FROM users WHERE id = ?', [id]);
     return rows[0];
   },
 
-  create: async (username, email, password) => {
-    const [result] = await pool.query(
-      'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
-      [username, email, password]
-    );
-    return result.insertId;
+  create: async (username, email, password, role) => {
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
+
+      // Insert into main users table
+      const [userResult] = await connection.query(
+        'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
+        [username, email, password, role]
+      );
+      const userId = userResult.insertId;
+
+      // Insert into specific "apart" table based on role
+      if (role === 'salesperson') {
+        await connection.query('INSERT INTO salespeople (user_id) VALUES (?)', [userId]);
+      } else {
+        await connection.query('INSERT INTO buyers (user_id) VALUES (?)', [userId]);
+      }
+
+      await connection.commit();
+      return userId;
+    } catch (err) {
+      await connection.rollback();
+      throw err;
+    } finally {
+      connection.release();
+    }
   }
 };
 

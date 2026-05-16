@@ -18,16 +18,37 @@ const initDB = async () => {
     const connection = await pool.getConnection();
     console.log('Connected to MySQL database');
     
+    // Core users table with role discriminator
     await connection.query(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
         username VARCHAR(255) NOT NULL UNIQUE,
         email VARCHAR(255) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
+        role ENUM('buyer', 'salesperson') NOT NULL DEFAULT 'buyer',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
-    console.log('Users table ensured');
+
+    // Apart tables for future specific features
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS buyers (
+        user_id INT PRIMARY KEY,
+        points INT DEFAULT 0,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS salespeople (
+        user_id INT PRIMARY KEY,
+        store_name VARCHAR(255),
+        rating DECIMAL(3,2) DEFAULT 0.0,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    console.log('Database schema (Users, Buyers, Salespeople) ensured');
     connection.release();
   } catch (err) {
     console.error('Error connecting to the database:', err.message);
