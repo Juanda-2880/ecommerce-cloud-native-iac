@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import { FaEye, FaEyeSlash, FaCheckCircle, FaTimesCircle } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router'
 import { SignupService } from '../../services/authService'
 
@@ -8,8 +8,8 @@ const SignupForm = () => {
     const {
         register,
         handleSubmit,
+        watch,
         formState: { errors },
-        reset,
     } = useForm({
         mode: 'onChange',
     })
@@ -17,6 +17,15 @@ const SignupForm = () => {
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState({ type: '', text: '' })
     const navigate = useNavigate()
+
+    const password = watch('password', '')
+
+    const passwordRequirements = [
+        { label: 'At least 2 numbers', test: (val) => (val.match(/[0-9]/g) || []).length >= 2 },
+        { label: 'One special character', test: (val) => /[!@#$%^&*(),.?":{}|<>]/.test(val) },
+        { label: 'One uppercase letter', test: (val) => /[A-Z]/.test(val) },
+        { label: 'Minimum 8 characters', test: (val) => val.length >= 8 },
+    ]
 
     const onSubmit = async (data) => {
         setLoading(true)
@@ -75,7 +84,15 @@ const SignupForm = () => {
             <div>
                 <div className="relative">
                     <input
-                        {...register('password', { required: 'Password is required' })}
+                        {...register('password', { 
+                            required: 'Password is required',
+                            validate: {
+                                twoNumbers: (v) => (v.match(/[0-9]/g) || []).length >= 2 || 'Requires at least 2 numbers',
+                                specialChar: (v) => /[!@#$%^&*(),.?":{}|<>]/.test(v) || 'Requires one special character',
+                                uppercase: (v) => /[A-Z]/.test(v) || 'Requires one uppercase letter',
+                                minLength: (v) => v.length >= 8 || 'Minimum 8 characters'
+                            }
+                        })}
                         className={`input input-bordered w-full pr-10 ${errors.password ? 'input-error' : ''}`}
                         placeholder="Password"
                         type={showPassword ? 'text' : 'password'}
@@ -88,14 +105,28 @@ const SignupForm = () => {
                         {showPassword ? <FaEyeSlash /> : <FaEye />}
                     </button>
                 </div>
-                {errors.password && <p className="text-error text-xs mt-1 ml-1">{errors.password.message}</p>}
+                
+                {/* Visual Feedback for Requirements */}
+                <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 bg-base-100/50 rounded-lg border border-primary/10">
+                    {passwordRequirements.map((req, i) => {
+                        const isMet = req.test(password)
+                        return (
+                            <div key={i} className={`flex items-center gap-2 text-[10px] transition-colors duration-300 ${isMet ? 'text-success' : 'text-gray-500'}`}>
+                                {isMet ? <FaCheckCircle /> : <FaTimesCircle className="opacity-50" />}
+                                {req.label}
+                            </div>
+                        )
+                    })}
+                </div>
+
+                {errors.password && <p className="text-error text-xs mt-2 ml-1 font-bold animate-pulse">{errors.password.message}</p>}
             </div>
             <button
                 type="submit"
                 disabled={loading}
-                className="btn btn-primary w-full font-bold shadow-[0_0_15px_rgba(0,243,255,0.3)] hover:shadow-[0_0_25px_rgba(0,243,255,0.5)]"
+                className="btn btn-primary w-full font-bold shadow-[0_0_15px_rgba(0,243,255,0.3)] hover:shadow-[0_0_25px_rgba(0,243,255,0.5)] mt-2"
             >
-                {loading ? <span className="loading loading-spinner"></span> : 'Sign Up Now'}
+                {loading ? <span className="loading loading-spinner"></span> : 'Secure Sign Up'}
             </button>
             <p className="text-center text-sm text-gray-400">
                 Already member?{' '}
