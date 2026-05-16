@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const { JWT_SECRET } = require('../middleware/auth');
 
-const register = async (req, res) => {
+const signup = async (req, res) => {
   const { username, email, password } = req.body;
 
   if (!username || !email || !password) {
@@ -21,11 +21,18 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    await User.create(username, email, hashedPassword);
+    const userId = await User.create(username, email, hashedPassword);
 
-    res.status(201).json({ message: 'User registered successfully!' });
+    // Auto-login: Create token after signup
+    const token = jwt.sign({ id: userId, username }, JWT_SECRET, { expiresIn: '1h' });
+
+    res.cookie('token', token, { httpOnly: true }).status(201).json({
+      message: 'User registered and logged in successfully!',
+      token,
+      user: { id: userId, username, email }
+    });
   } catch (err) {
-    console.error('Registration error:', err);
+    console.error('Signup error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -71,4 +78,4 @@ const getProfile = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getProfile };
+module.exports = { signup, login, getProfile };

@@ -1,4 +1,3 @@
-import AuthButtons from './AuthButtons'
 import Cart from './Cart'
 import UserDropDown from './UserDropDown'
 import { Link } from 'react-router'
@@ -15,20 +14,21 @@ const Navbar = () => {
     }, [])
 
     return (
-        <header>
-            {!user && <AuthButtons />}
-            <nav className="navbar bg-base-100 shadow-sm lg:rounded-box w-full">
+        <header className="sticky top-0 z-50 backdrop-blur-md bg-base-100/70 border-b border-primary/20">
+            <nav className="navbar container mx-auto px-4">
                 <div className="navbar-start">
-                    <Link className="btn btn-ghost normal-case text-xl" to="/">
-                        Shoply
+                    <Link className="text-3xl font-black text-primary tracking-tighter drop-shadow-[0_0_8px_rgba(0,243,255,0.6)] hover:drop-shadow-[0_0_12px_rgba(0,243,255,1)] transition-all duration-300" to="/">
+                        SHOPLY
                     </Link>
                 </div>
-                <div className="navbar-end gap-3">
+                <div className="navbar-end gap-2 lg:gap-4">
                     <Cart />
-                    {user ? <UserDropDown user={user} /> : (
+                    {user ? (
+                        <UserDropDown user={user} />
+                    ) : (
                         <div className="flex gap-2">
-                            <Link to="/login" className="btn btn-primary btn-sm">Log In</Link>
-                            <Link to="/register" className="btn btn-secondary btn-sm">Sign Up</Link>
+                            <Link to="/login" className="btn btn-ghost btn-sm lg:btn-md hover:text-secondary transition-colors">Log In</Link>
+                            <Link to="/signup" className="btn btn-primary btn-sm lg:btn-md shadow-[0_0_10px_rgba(0,243,255,0.4)]">Sign Up</Link>
                         </div>
                     )}
                 </div>

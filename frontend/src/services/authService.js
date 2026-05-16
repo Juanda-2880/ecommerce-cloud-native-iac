@@ -44,9 +44,9 @@ export const LoginService = async (credentials) => {
     }
 }
 
-export const RegisterService = async (userData) => {
+export const SignupService = async (userData) => {
     try {
-        const response = await fetch(`${API_URL}/register`, {
+        const response = await fetch(`${API_URL}/signup`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -57,12 +57,18 @@ export const RegisterService = async (userData) => {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.error || 'Registration failed');
+            throw new Error(data.error || 'Signup failed');
+        }
+
+        // Auto-login after signup
+        if (data.token) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
         }
 
         return data;
     } catch (error) {
-        console.error('RegisterService error:', error);
+        console.error('SignupService error:', error);
         throw error;
     }
 }

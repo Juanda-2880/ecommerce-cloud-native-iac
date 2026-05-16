@@ -1,12 +1,13 @@
 import RegisterForm from '../components/Register/RegisterForm'
 
-const RegisterPage = () => {
+const SignupPage = () => {
     return (
-        <div className="mt-16">
-            <h1 className="text-3xl font-bold text-center">Sign Up</h1>
-            <RegisterForm />
+        <div className="min-h-[80vh] flex flex-col justify-center items-center px-4 page-transition">
+            <div className="w-full max-w-[500px]">
+                <RegisterForm />
+            </div>
         </div>
     )
 }
 
-export default RegisterPage
+export default SignupPage

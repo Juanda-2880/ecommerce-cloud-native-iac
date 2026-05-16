@@ -1,31 +1,35 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
-import { Link } from 'react-router'
-import { RegisterService } from '../../services/authService'
+import { Link, useNavigate } from 'react-router'
+import { SignupService } from '../../services/authService'
 
-const RegisterForm = () => {
+const SignupForm = () => {
     const {
         register,
         handleSubmit,
         formState: { errors },
         reset,
     } = useForm({
-        mode: 'onChange', //Real Time Validation
+        mode: 'onChange',
     })
     const [showPassword, setShowPassword] = useState(false)
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState({ type: '', text: '' })
+    const navigate = useNavigate()
 
     const onSubmit = async (data) => {
         setLoading(true)
         setMessage({ type: '', text: '' })
         try {
-            await RegisterService(data)
-            setMessage({ type: 'success', text: 'Registration successful! You can now log in.' })
-            reset()
+            await SignupService(data)
+            setMessage({ type: 'success', text: 'Account created! Redirecting to home...' })
+            setTimeout(() => {
+                navigate('/')
+                window.location.reload()
+            }, 1500)
         } catch (error) {
-            setMessage({ type: 'error', text: error.message || 'Something went wrong. Please try again.' })
+            setMessage({ type: 'error', text: error.message || 'Something went wrong.' })
         } finally {
             setLoading(false)
         }
@@ -34,10 +38,13 @@ const RegisterForm = () => {
     return (
         <form
             onSubmit={handleSubmit(onSubmit)}
-            className="mt-8 flex flex-col gap-4 lg:gap-6 max-w-[500px] mx-auto"
+            className="mt-8 flex flex-col gap-4 lg:gap-6 max-w-[500px] mx-auto form-entrance p-8 bg-neutral/40 rounded-2xl border border-primary/20 backdrop-blur-sm shadow-2xl"
         >
+            <h2 className="text-3xl font-bold text-center text-primary mb-2 drop-shadow-[0_0_10px_rgba(0,243,255,0.5)]">
+                Create Account
+            </h2>
             {message.text && (
-                <div className={`p-3 rounded text-sm ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                <div className={`p-3 rounded-lg text-sm text-center font-bold transition-all duration-300 ${message.type === 'success' ? 'bg-success/20 text-success border border-success/50' : 'bg-error/20 text-error border border-error/50'}`}>
                     {message.text}
                 </div>
             )}
@@ -45,110 +52,54 @@ const RegisterForm = () => {
                 <input
                     {...register('username', {
                         required: 'Username is required',
-                        minLength: {
-                            value: 3,
-                            message: 'Username must be at least 3 characters',
-                        },
-                        maxLength: {
-                            value: 20,
-                            message: 'Username must be less than 20 characters',
-                        },
+                        minLength: { value: 3, message: 'Too short' },
                     })}
-                    className={`p-2 outline-2 rounded border focus:outline-primary w-full ${
-                        errors.username
-                            ? 'border-red-500 focus:outline-red-500'
-                            : ''
-                    }`}
-                    autoComplete="username"
+                    className={`input input-bordered w-full ${errors.username ? 'input-error' : ''}`}
                     placeholder="Username"
                     type="text"
                 />
-                {errors.username && (
-                    <p className="text-red-500 text-sm mt-2 ml-1">
-                        {errors.username.message}
-                    </p>
-                )}
+                {errors.username && <p className="text-error text-xs mt-1 ml-1">{errors.username.message}</p>}
             </div>
             <div>
                 <input
                     {...register('email', {
                         required: 'Email is required',
-                        pattern: {
-                            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                            message: 'Invalid email address',
-                        },
-                        minLength: {
-                            value: 5,
-                            message: 'Email must be at least 5 characters',
-                        },
-                        maxLength: {
-                            value: 50,
-                            message: 'Email must be less than 50 characters',
-                        },
+                        pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: 'Invalid email' }
                     })}
-                    className={`p-2 outline-2 rounded border focus:outline-primary w-full ${
-                        errors.email
-                            ? 'border-red-500 focus:outline-red-500'
-                            : ''
-                    }`}
-                    autoComplete="email"
+                    className={`input input-bordered w-full ${errors.email ? 'input-error' : ''}`}
                     placeholder="Email"
                     type="email"
                 />
-                {errors.email && (
-                    <p className="text-red-500 text-sm mt-2 ml-1">
-                        {errors.email.message}
-                    </p>
-                )}
+                {errors.email && <p className="text-error text-xs mt-1 ml-1">{errors.email.message}</p>}
             </div>
             <div>
                 <div className="relative">
                     <input
-                        {...register('password', {
-                            required: 'Password is required',
-                            minLength: {
-                                value: 6,
-                                message:
-                                    'Password must be at least 6 characters',
-                            },
-                            maxLength: {
-                                value: 99,
-                                message:
-                                    'Password must be less than 100 characters',
-                            },
-                        })}
-                        className={`p-2 pr-10 outline-2 rounded border focus:outline-primary w-full ${
-                            errors.password
-                                ? 'border-red-500 focus:outline-red-500'
-                                : ''
-                        }`}
-                        autoComplete="new-password"
+                        {...register('password', { required: 'Password is required' })}
+                        className={`input input-bordered w-full pr-10 ${errors.password ? 'input-error' : ''}`}
                         placeholder="Password"
                         type={showPassword ? 'text' : 'password'}
                     />
                     <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer flex items-center justify-center"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-primary hover:text-secondary transition-colors"
                     >
                         {showPassword ? <FaEyeSlash /> : <FaEye />}
                     </button>
                 </div>
-                {errors.password && (
-                    <p className="text-red-500 text-sm mt-2 ml-1">
-                        {errors.password.message}
-                    </p>
-                )}
+                {errors.password && <p className="text-error text-xs mt-1 ml-1">{errors.password.message}</p>}
             </div>
             <button
                 type="submit"
-                className="mt-2 bg-primary text-white p-2 rounded font-bold hover:bg-primary/90 transition-colors cursor-pointer"
+                disabled={loading}
+                className="btn btn-primary w-full font-bold shadow-[0_0_15px_rgba(0,243,255,0.3)] hover:shadow-[0_0_25px_rgba(0,243,255,0.5)]"
             >
-                Sign Up
+                {loading ? <span className="loading loading-spinner"></span> : 'Sign Up Now'}
             </button>
-            <p className="text-center text-sm">
-                Already have an account?{' '}
-                <Link to="/login" className="text-primary font-bold hover:underline">
+            <p className="text-center text-sm text-gray-400">
+                Already member?{' '}
+                <Link to="/login" className="text-secondary font-bold hover:underline hover:text-secondary-focus transition-colors">
                     Log In
                 </Link>
             </p>
@@ -156,4 +107,4 @@ const RegisterForm = () => {
     )
 }
 
-export default RegisterForm
+export default SignupForm

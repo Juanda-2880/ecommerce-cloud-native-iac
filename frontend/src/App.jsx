@@ -1,19 +1,20 @@
-import Navbar from './components/Navbar/Navbar'
 import { Route, Routes } from 'react-router'
 import Layout from './layout/Layout'
 import Home from './pages/Home'
-import RegisterPage from './pages/Register'
-import LoginPage from './pages/Login'
+import Login from './pages/Login'
+import Signup from './pages/Register'
 
 function App() {
     return (
-        <Routes>
-            <Route element={<Layout />}>
-                <Route path="/" element={<Home />}></Route>
-                <Route path="/register" element={<RegisterPage />}></Route>
-                <Route path="/login" element={<LoginPage />}></Route>
-            </Route>
-        </Routes>
+        <div data-theme="neon" className="min-h-screen">
+            <Routes>
+                <Route path="/" element={<Layout />}>
+                    <Route index element={<Home />} />
+                    <Route path="login" element={<Login />} />
+                    <Route path="signup" element={<Signup />} />
+                </Route>
+            </Routes>
+        </div>
     )
 }
 
