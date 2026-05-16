@@ -21,12 +21,18 @@ const LoginForm = () => {
         setLoading(true)
         setMessage({ type: '', text: '' })
         try {
-            await LoginService(data)
+            const response = await LoginService(data)
             setMessage({ type: 'success', text: 'Identity verified. Access granted.' })
+            
+            // Smart Role-Based Redirection
             setTimeout(() => {
-                navigate('/')
+                if (response.user.role === 'salesperson') {
+                    navigate('/seller-dashboard')
+                } else {
+                    navigate('/')
+                }
                 window.location.reload()
-            }, 1500)
+            }, 1000)
         } catch (error) {
             setMessage({ type: 'error', text: error.message || 'Verification failed. Access denied.' })
         } finally {

@@ -36,12 +36,18 @@ const SignupForm = () => {
         setLoading(true)
         setMessage({ type: '', text: '' })
         try {
-            await SignupService(data)
+            const response = await SignupService(data)
             setMessage({ type: 'success', text: 'Welcome to Shoply! Redirecting...' })
+            
+            // Smart Role-Based Redirection
             setTimeout(() => {
-                navigate('/')
+                if (response.user.role === 'salesperson') {
+                    navigate('/seller-dashboard')
+                } else {
+                    navigate('/')
+                }
                 window.location.reload()
-            }, 1500)
+            }, 1000)
         } catch (error) {
             setMessage({ type: 'error', text: error.message || 'Signup failed.' })
         } finally {
@@ -66,7 +72,6 @@ const SignupForm = () => {
                 </div>
             )}
 
-            {/* Role Selector */}
             <div className="flex gap-4 p-1 bg-base-100/50 rounded-2xl border border-primary/10">
                 <button
                     type="button"
@@ -91,7 +96,7 @@ const SignupForm = () => {
                 <div>
                     <input
                         {...register('username', { required: 'Username is required', minLength: 3 })}
-                        className={`input input-bordered w-full rounded-xl ${errors.username ? 'input-error' : ''}`}
+                        className={`input input-bordered w-full rounded-xl tracking-tight ${errors.username ? 'input-error' : ''}`}
                         placeholder="Choose Username"
                         type="text"
                     />
@@ -103,7 +108,7 @@ const SignupForm = () => {
                             required: 'Email is required',
                             pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
                         })}
-                        className={`input input-bordered w-full rounded-xl ${errors.email ? 'input-error' : ''}`}
+                        className={`input input-bordered w-full rounded-xl tracking-tight ${errors.email ? 'input-error' : ''}`}
                         placeholder="Email Address"
                         type="email"
                     />
@@ -116,7 +121,7 @@ const SignupForm = () => {
                                 required: true,
                                 validate: (v) => passwordRequirements.every(r => r.test(v)) || 'Requirements not met'
                             })}
-                            className={`input input-bordered w-full pr-10 rounded-xl ${errors.password ? 'input-error' : ''}`}
+                            className={`input input-bordered w-full pr-10 rounded-xl tracking-tight ${errors.password ? 'input-error' : ''}`}
                             placeholder="Create Password"
                             type={showPassword ? 'text' : 'password'}
                         />

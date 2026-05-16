@@ -3,6 +3,7 @@ import Layout from './layout/Layout'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Signup from './pages/Register'
+import SellerDashboard from './pages/SellerDashboard'
 
 function App() {
     return (
@@ -12,6 +13,7 @@ function App() {
                     <Route index element={<Home />} />
                     <Route path="login" element={<Login />} />
                     <Route path="signup" element={<Signup />} />
+                    <Route path="seller-dashboard" element={<SellerDashboard />} />
                 </Route>
             </Routes>
         </div>
