@@ -10,12 +10,25 @@ module "networking" {
     az2 = var.az2
 }
 
-// PHASE 2
+module "compute" {
+    source = "../../modules/compute"
+    vpc_id = module.networking.vpc_id
+    public_subnet_ids = [module.networking.public_subnet1_id, module.networking.public_subnet2_id]
+    private_subnet_ids = module.networking.private_subnet_ids
+    ssh_key_name = var.ssh_key_name
+    ami_id = var.ami_id
+    aws_region = var.region
+    instance_profile_arn = var.instance_profile_arn
+    db_endpoint = module.database.db_endpoint
+    db_username = var.db_username
+    db_password = var.db_password
+    db_name = var.db_name
+}
 
 module "database" {
     source = "../../modules/database"
     dbport = var.dbport
-    app_security_group_id = var.app_security_group_id
+    app_security_group_id = module.compute.app_security_group_id
     vpc_id = module.networking.vpc_id
     subnet_ids = module.networking.private_subnet_ids
     db_engine = var.db_engine
