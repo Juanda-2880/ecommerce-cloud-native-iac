@@ -25,3 +25,15 @@ module "database" {
     db_username = var.db_username
     db_password = var.db_password
 }
+
+// AUTOMATION OF THE DB CONECTION WITH THE BACKEND
+
+resource "local_file" "db_conf" {
+    content = <<-EOT
+    DB_HOST=${module.database.db_endpoint}
+    DB_USER=${var.db_username}
+    DB_PASS=${var.db_password}
+    EOT
+    filename = "/home/juanda/Documents/Universidad/Infra III/Proyecto/ecommerce-cloud-native-iac/.env"
+}
+

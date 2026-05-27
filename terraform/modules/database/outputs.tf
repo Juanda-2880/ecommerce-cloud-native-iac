@@ -1,11 +1,3 @@
-# ==============================================================================
-# terraform/modules/database/outputs.tf
-# Outputs del módulo de base de datos — consumidos por otros módulos
-#
-# SANDBOX: Se eliminaron outputs de Secrets Manager e IAM Role
-#          porque esos recursos no se crean en el Sandbox de AWS.
-# ==============================================================================
-
 output "db_instance_id" {
   description = "Identificador único de la instancia RDS"
   value       = aws_db_instance.principal_rds.id
