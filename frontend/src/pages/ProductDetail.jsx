@@ -61,7 +61,7 @@ const ProductDetail = () => {
             <h1 className="text-4xl font-black uppercase text-error">Data Corrupted</h1>
             <p className="text-gray-500 font-bold uppercase tracking-widest">Target item not found in registry.</p>
             <button onClick={() => navigate('/')} className="btn btn-primary rounded-xl font-black uppercase tracking-widest">
-                Return to Nexus
+                Return to Home
             </button>
         </div>
     )

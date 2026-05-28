@@ -8,7 +8,8 @@ services:
       - DB_HOST=db:3306
       - DB_USER=${DB_USER:-ecommerce_admin}
       - DB_PASSWORD=${DB_PASS:-SecurePassword123!}
-      - DB_NAME=${DB_NAME:-ecommerce_db}
+      - DB_NAME=ecommerce_db
+      - MP_ACCESS_TOKEN=${MP_ACCESS_TOKEN}
     depends_on:
       db:
         condition: service_healthy

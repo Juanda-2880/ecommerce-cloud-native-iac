@@ -64,6 +64,9 @@ export const SignupService = async (userData) => {
         if (data.token) {
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
+            // Empty the cart on new signup
+            localStorage.removeItem('cart');
+            window.dispatchEvent(new Event('cartUpdate'));
         }
 
         return data;
@@ -121,4 +124,7 @@ export const DeleteAccountService = async () => {
 export const LogoutService = async () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    // Empty the cart on logout
+    localStorage.removeItem('cart');
+    window.dispatchEvent(new Event('cartUpdate'));
 }

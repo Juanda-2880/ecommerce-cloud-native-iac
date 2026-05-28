@@ -167,7 +167,7 @@ const SellerDashboard = () => {
                     }}
                     className="btn btn-primary gap-2 rounded-xl font-black uppercase tracking-widest shadow-[0_0_15px_rgba(0,243,255,0.3)] w-full md:w-auto"
                 >
-                    <FaPlus /> Deploy New Item
+                    <FaPlus /> Add New Product
                 </button>
             </header>
 
@@ -234,9 +234,15 @@ const SellerDashboard = () => {
                                     <div className="w-full h-full flex items-center justify-center text-gray-600 italic">No image provided</div>
                                 )}
                                 <div className="absolute top-4 left-4 flex gap-2">
-                                    <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${product.is_published ? 'bg-success/20 text-success border border-success/30' : 'bg-warning/20 text-warning border border-warning/30'}`}>
-                                        {product.is_published ? 'Published' : 'Draft'}
-                                    </div>
+                                    {product.quantity <= 0 ? (
+                                        <div className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-error/20 text-error border border-error/30">
+                                            Sold Out
+                                        </div>
+                                    ) : (
+                                        <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${product.is_published ? 'bg-success/20 text-success border border-success/30' : 'bg-warning/20 text-warning border border-warning/30'}`}>
+                                            {product.is_published ? 'Published' : 'Draft'}
+                                        </div>
+                                    )}
                                     <div className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-accent/20 text-accent border border-accent/30">
                                         {product.product_condition}
                                     </div>
@@ -284,7 +290,7 @@ const SellerDashboard = () => {
                     <div className="bg-neutral-focus w-full max-w-2xl rounded-3xl border border-primary/20 shadow-2xl relative z-10 overflow-hidden max-h-[90vh] overflow-y-auto">
                         <div className="p-8 border-b border-white/5 flex justify-between items-center sticky top-0 bg-neutral-focus z-10">
                             <h2 className="text-2xl font-black uppercase tracking-tighter">
-                                {editingProduct ? 'Update' : 'Deploy'} <span className="text-primary">Component</span>
+                                {editingProduct ? 'Update' : 'Add'} <span className="text-primary">Product</span>
                             </h2>
                             <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-white transition-colors">
                                 <FaTimes className="text-xl" />
@@ -388,7 +394,7 @@ const SellerDashboard = () => {
                             <div className="flex gap-4">
                                 <button type="button" onClick={() => setIsModalOpen(false)} className="btn btn-ghost flex-1 rounded-xl uppercase font-black tracking-widest">Cancel</button>
                                 <button type="submit" className="btn btn-primary flex-[2] rounded-xl uppercase font-black tracking-widest shadow-[0_0_15px_rgba(0,243,255,0.3)]">
-                                    {editingProduct ? 'Update Deployment' : 'Confirm Deployment'}
+                                    {editingProduct ? 'Update Product' : 'Save Product'}
                                 </button>
                             </div>
                         </form>

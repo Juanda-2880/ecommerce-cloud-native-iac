@@ -93,7 +93,7 @@ const AccountSettings = () => {
                 </div>
                 <div>
                     <h1 className="text-4xl font-black tracking-tighter uppercase italic">
-                        Neural <span className="text-primary">Registry</span>
+                        Account <span className="text-primary">Settings</span>
                     </h1>
                     <p className="text-gray-500 uppercase tracking-widest text-[10px] font-bold">
                         Security & Identity Configuration Terminal

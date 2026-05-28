@@ -45,7 +45,7 @@ const UserDropDown = ({ user }) => {
                             className="hover:text-secondary hover:bg-secondary/5 transition-all py-3 px-4 flex items-center gap-3 group"
                         >
                             <FaStore className="text-secondary group-hover:scale-110 transition-transform" />
-                            <span className="font-bold uppercase tracking-widest text-[11px]">Seller Nexus</span>
+                            <span className="font-bold uppercase tracking-widest text-[11px]">Seller Dashboard</span>
                         </button>
                     </li>
                 )}
@@ -56,15 +56,18 @@ const UserDropDown = ({ user }) => {
                         className="hover:text-primary hover:bg-primary/5 transition-all py-3 px-4 flex items-center gap-3 group"
                     >
                         <FaUserCog className="text-primary group-hover:rotate-45 transition-transform" />
-                        <span className="font-bold uppercase tracking-widest text-[11px]">Neural Settings</span>
+                        <span className="font-bold uppercase tracking-widest text-[11px]">Account Settings</span>
                     </button>
                 </li>
 
                 <li>
-                    <a className="hover:text-accent hover:bg-accent/5 transition-all py-3 px-4 flex items-center gap-3 group">
+                    <button 
+                        onClick={() => navigate('/order-history')}
+                        className="hover:text-accent hover:bg-accent/5 transition-all py-3 px-4 flex items-center gap-3 group"
+                    >
                         <FaShoppingBag className="text-accent group-hover:scale-110 transition-transform" />
-                        <span className="font-bold uppercase tracking-widest text-[11px]">Orders History</span>
-                    </a>
+                        <span className="font-bold uppercase tracking-widest text-[11px]">My Orders</span>
+                    </button>
                 </li>
 
                 <div className="divider my-0 opacity-10"></div>

@@ -41,22 +41,22 @@ const Home = () => {
                 <div className="container mx-auto px-6 h-full flex flex-col justify-center relative z-20">
                     <div className="flex items-center gap-4 mb-6">
                         <div className="w-12 h-1 bg-primary rounded-full shadow-[0_0_10px_rgba(0,243,255,0.8)]"></div>
-                        <span className="text-[10px] uppercase font-black tracking-[0.5em] text-primary">Neural Marketplace v2.0</span>
-                    </div>
-                    <h1 className="text-7xl font-black uppercase tracking-tighter text-white mb-6 italic leading-none">
-                        GEAR UP FOR THE <br />
-                        <span className="text-primary drop-shadow-[0_0_15px_rgba(0,243,255,0.5)]">NEXT FRONTIER</span>
-                    </h1>
-                    <p className="max-w-xl text-gray-400 font-bold text-lg uppercase tracking-tight mb-8">
-                        The ultimate decentralized node for high-end tech, 
-                        black-market components, and cybernetic enhancements.
-                    </p>
+                        <span className="text-[10px] uppercase font-black tracking-[0.5em] text-primary">Shoply Marketplace v2.0</span>
+                        </div>
+                        <h1 className="text-7xl font-black uppercase tracking-tighter text-white mb-6 italic leading-none">
+                        DISCOVER THE <br />
+                        <span className="text-primary drop-shadow-[0_0_15px_rgba(0,243,255,0.5)]">BEST PRODUCTS</span>
+                        </h1>
+                        <p className="max-w-xl text-gray-400 font-bold text-lg uppercase tracking-tight mb-8">
+                        Your trusted platform for high-quality electronics,
+                        accessories, and exclusive tech deals.
+                        </p>
 
-                    <form onSubmit={handleSearch} className="max-w-2xl relative group">
+                        <form onSubmit={handleSearch} className="max-w-2xl relative group">
                         <FaSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-primary text-xl transition-all group-focus-within:scale-125" />
-                        <input 
-                            type="text" 
-                            placeholder="SCAN THE REGISTRY FOR COMPONENTS..." 
+                        <input
+                            type="text"
+                            placeholder="SEARCH FOR PRODUCTS..."
                             className="input input-bordered w-full h-16 pl-16 pr-32 bg-neutral/80 backdrop-blur-md border-primary/20 rounded-2xl focus:border-primary font-black uppercase tracking-widest text-xs shadow-2xl"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -64,15 +64,15 @@ const Home = () => {
                         <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 btn btn-primary px-8 rounded-xl font-black uppercase tracking-widest text-[10px] h-10 min-h-0">
                             Search
                         </button>
-                    </form>
-                </div>
-            </section>
+                        </form>
+                        </div>
+                        </section>
 
-            {/* Marketplace Grid */}
-            <section className="container mx-auto px-6 py-20">
-                <div className="flex justify-between items-end mb-12">
-                    <div>
-                        <h2 className="text-4xl font-black uppercase tracking-tighter text-white italic">Active <span className="text-secondary">Deployments</span></h2>
+                        {/* Marketplace Grid */}
+                        <section className="container mx-auto px-6 py-20">
+                        <div className="flex justify-between items-end mb-12">
+                        <div>
+                        <h2 className="text-4xl font-black uppercase tracking-tighter text-white italic">Featured <span className="text-secondary">Products</span></h2>
                         <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Real-time synchronization with seller nodes</p>
                     </div>
                     <div className="text-[10px] font-black uppercase tracking-widest text-gray-500 bg-neutral/30 px-4 py-2 rounded-full border border-white/5">

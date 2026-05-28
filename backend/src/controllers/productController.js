@@ -31,11 +31,11 @@ const createProduct = async (req, res) => {
     const seller_id = req.user.id;
 
     if (!name || !price_cop) {
-      return res.status(400).json({ error: 'Critical failure: Name and Price are mandatory parameters for deployment.' });
+      return res.status(400).json({ error: 'Name and Price are mandatory parameters.' });
     }
 
     if (req.user.role !== 'salesperson') {
-      return res.status(403).json({ error: 'Access denied: Insufficient privileges for product deployment.' });
+      return res.status(403).json({ error: 'Access denied: Insufficient privileges.' });
     }
 
     const productId = await Product.create({
@@ -50,7 +50,7 @@ const createProduct = async (req, res) => {
       seller_id
     });
 
-    res.status(201).json({ message: `Success: Component "${name}" successfully deployed to inventory.`, productId });
+    res.status(201).json({ message: `Success: Product "${name}" successfully added to inventory.`, productId });
   } catch (err) {
     console.error('Error in createProduct:', err);
     if (err.code === 'ER_NO_REFERENCED_ROW_2') {
@@ -98,7 +98,7 @@ const updateProduct = async (req, res) => {
       image_url, 
       is_published 
     });
-    res.json({ message: `Success: Component "${name || product.name}" configuration updated.` });
+    res.json({ message: `Success: Product "${name || product.name}" updated.` });
   } catch (err) {
     console.error('Error in updateProduct:', err);
     res.status(500).json({ error: err.message });
@@ -120,7 +120,7 @@ const deleteProduct = async (req, res) => {
     }
 
     await Product.delete(id);
-    res.json({ message: `Termination Sequence Complete: Component "${product.name}" has been removed from the registry.` });
+    res.json({ message: `Success: Product "${product.name}" has been deleted.` });
   } catch (err) {
     console.error('Error in deleteProduct:', err);
     res.status(500).json({ error: err.message });

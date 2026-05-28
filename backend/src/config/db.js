@@ -65,7 +65,30 @@ const initDB = async () => {
       )
     `);
 
-    console.log('Database schema (Users, Buyers, Salespeople, Products) ensured');
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS orders (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        buyer_id INT NOT NULL,
+        total_amount DECIMAL(15, 2) NOT NULL,
+        status ENUM('pending', 'completed', 'cancelled') DEFAULT 'completed',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (buyer_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS order_items (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        order_id INT NOT NULL,
+        product_id INT NOT NULL,
+        quantity INT NOT NULL,
+        price_at_purchase DECIMAL(15, 2) NOT NULL,
+        FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+      )
+    `);
+
+    console.log('Database schema (Users, Buyers, Salespeople, Products, Orders, Items) ensured');
     connection.release();
   } catch (err) {
     console.error('Error connecting to the database:', err.message);

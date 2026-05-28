@@ -1,0 +1,67 @@
+Attaching to ecommerce-cloud-native-iac_backend_1
+[36mbackend_1   |[0m 
+[36mbackend_1   |[0m > ecommerce-cloud-native-iac@1.0.0 start
+[36mbackend_1   |[0m > node src/index.js
+[36mbackend_1   |[0m 
+[36mbackend_1   |[0m [dotenv@17.2.1] injecting env (0) from .env -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar
+[36mbackend_1   |[0m [dotenv@17.2.1] injecting env (0) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[36mbackend_1   |[0m Server is running on port 5000
+[36mbackend_1   |[0m Connected to MySQL database
+[36mbackend_1   |[0m Database schema (Users, Buyers, Salespeople, Products, Orders, Items) ensured
+[36mbackend_1   |[0m Creating MP Preference with payload: {
+[36mbackend_1   |[0m   "body": {
+[36mbackend_1   |[0m     "items": [
+[36mbackend_1   |[0m       {
+[36mbackend_1   |[0m         "id": "1",
+[36mbackend_1   |[0m         "title": "test",
+[36mbackend_1   |[0m         "quantity": 1,
+[36mbackend_1   |[0m         "unit_price": 10,
+[36mbackend_1   |[0m         "currency_id": "COP"
+[36mbackend_1   |[0m       }
+[36mbackend_1   |[0m     ],
+[36mbackend_1   |[0m     "back_urls": {
+[36mbackend_1   |[0m       "success": "http://localhost:8082/order-history",
+[36mbackend_1   |[0m       "failure": "http://localhost:8082/basket",
+[36mbackend_1   |[0m       "pending": "http://localhost:8082/order-history"
+[36mbackend_1   |[0m     },
+[36mbackend_1   |[0m     "external_reference": "1"
+[36mbackend_1   |[0m   }
+[36mbackend_1   |[0m }
+[36mbackend_1   |[0m Creating MP Preference with payload: {
+[36mbackend_1   |[0m   "body": {
+[36mbackend_1   |[0m     "items": [
+[36mbackend_1   |[0m       {
+[36mbackend_1   |[0m         "id": "1",
+[36mbackend_1   |[0m         "title": "test",
+[36mbackend_1   |[0m         "quantity": 1,
+[36mbackend_1   |[0m         "unit_price": 10000,
+[36mbackend_1   |[0m         "currency_id": "COP"
+[36mbackend_1   |[0m       }
+[36mbackend_1   |[0m     ],
+[36mbackend_1   |[0m     "back_urls": {
+[36mbackend_1   |[0m       "success": "http://localhost:8082/order-history",
+[36mbackend_1   |[0m       "failure": "http://localhost:8082/basket",
+[36mbackend_1   |[0m       "pending": "http://localhost:8082/order-history"
+[36mbackend_1   |[0m     },
+[36mbackend_1   |[0m     "external_reference": "2"
+[36mbackend_1   |[0m   }
+[36mbackend_1   |[0m }
+[36mbackend_1   |[0m Creating MP Preference with payload: {
+[36mbackend_1   |[0m   "body": {
+[36mbackend_1   |[0m     "items": [
+[36mbackend_1   |[0m       {
+[36mbackend_1   |[0m         "id": "1",
+[36mbackend_1   |[0m         "title": "test",
+[36mbackend_1   |[0m         "quantity": 1,
+[36mbackend_1   |[0m         "unit_price": 5000,
+[36mbackend_1   |[0m         "currency_id": "COP"
+[36mbackend_1   |[0m       }
+[36mbackend_1   |[0m     ],
+[36mbackend_1   |[0m     "back_urls": {
+[36mbackend_1   |[0m       "success": "http://localhost:8082/order-history",
+[36mbackend_1   |[0m       "failure": "http://localhost:8082/basket",
+[36mbackend_1   |[0m       "pending": "http://localhost:8082/order-history"
+[36mbackend_1   |[0m     },
+[36mbackend_1   |[0m     "external_reference": "3"
+[36mbackend_1   |[0m   }
+[36mbackend_1   |[0m }

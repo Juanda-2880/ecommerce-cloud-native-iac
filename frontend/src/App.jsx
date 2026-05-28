@@ -7,6 +7,7 @@ import SellerDashboard from './pages/SellerDashboard'
 import AccountSettings from './pages/AccountSettings'
 import ProductDetail from './pages/ProductDetail'
 import CartPage from './pages/CartPage'
+import OrderHistory from './pages/OrderHistory'
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
                     <Route path="account-settings" element={<AccountSettings />} />
                     <Route path="product/:id" element={<ProductDetail />} />
                     <Route path="basket" element={<CartPage />} />
+                    <Route path="order-history" element={<OrderHistory />} />
                 </Route>
             </Routes>
         </div>
