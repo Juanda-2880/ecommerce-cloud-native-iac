@@ -48,7 +48,22 @@ const initDB = async () => {
       )
     `);
 
-    console.log('Database schema (Users, Buyers, Salespeople) ensured');
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS products (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        description TEXT,
+        price_cop DECIMAL(15, 2) NOT NULL,
+        is_negotiable BOOLEAN DEFAULT FALSE,
+        image_url VARCHAR(255),
+        is_published BOOLEAN DEFAULT TRUE,
+        seller_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (seller_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    console.log('Database schema (Users, Buyers, Salespeople, Products) ensured');
     connection.release();
   } catch (err) {
     console.error('Error connecting to the database:', err.message);

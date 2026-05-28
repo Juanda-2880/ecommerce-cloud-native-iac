@@ -30,6 +30,16 @@ const UserDropDown = ({ user }) => {
                     Welcome, {user?.username}
                 </li>
                 <div className="divider my-0 opacity-20"></div>
+                {user?.role === 'salesperson' && (
+                    <li>
+                        <button 
+                            onClick={() => navigate('/seller-dashboard')}
+                            className="text-secondary font-bold hover:bg-secondary/10 transition-all py-3 px-4 flex items-center gap-2"
+                        >
+                            Seller Dashboard
+                        </button>
+                    </li>
+                )}
                 <li><a className="hover:text-primary transition-colors py-3 px-4">My Orders</a></li>
                 <li><a className="hover:text-primary transition-colors py-3 px-4">Account Settings</a></li>
                 <div className="divider my-0 opacity-20"></div>
