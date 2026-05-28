@@ -74,3 +74,13 @@ output "db_env_config" {
   sensitive   = true
   value       = module.database.db_env_config
 }
+
+output "alb_dns_name" {
+  description = "DNS Name of the Application Load Balancer"
+  value       = module.compute.alb_dns_name
+}
+
+output "bastion_public_ip" {
+  description = "Public IP of the Bastion Host"
+  value       = module.compute.bastion_public_ip
+}

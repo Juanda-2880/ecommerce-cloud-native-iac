@@ -1,46 +1,36 @@
 Project Structure
 ```
 /
-├── app/                              # Backend en Node.js 
+├── backend/                          # Backend en Node.js (Express + Sequelize)
 │   ├── src/
-│   │   ├── domain/                   # Capa 1: Entidades (Product, User, Cart)
-│   │   ├── application/              # Capa 2: Casos de uso (AddToCart, ProcessPayment )
-│   │   ├── interfaces/               # Capa 3: Controladores (Reciben requests, envían responses)
-│   │   ├── infrastructure/           # Capa 4: Frameworks y herramientas externas
-│   │   │   ├── web/                  # Servidor Express.js y middlewares 
-│   │   │   ├── database/             # Modelos de Sequelize y configuración de conexión 
-│   │   │   └── aws/                  # Servicios externos (Ej. SDK para S3 si se usa para imágenes )
+│   │   ├── config/                   # Configuración de base de datos (Sequelize)
+│   │   ├── controllers/              # Controladores (Lógica de rutas)
+│   │   ├── middleware/               # Middlewares (Auth, etc.)
+│   │   ├── models/                   # Modelos de Sequelize (User, Buyer, Salesperson)
+│   │   ├── routes/                   # Definición de rutas
 │   │   └── index.js                  # Punto de entrada de la aplicación
 │   ├── package.json
-│   └── .env.example                  # Variables de entorno requeridas
+│   └── .env                          # Variables de entorno (generado por Terraform)
 │
-├── frontend/                         # Frontend estático (HTML, CSS, JS )
-│   ├── public/                       # Assets, imágenes, estilos minimalistas 
-│   └── index.html
+├── frontend/                         # Frontend en React (Vite + Tailwind)
+│   ├── src/
+│   ├── public/
+│   └── package.json
 │
-├── terraform/                        # Infraestructura como Código (Reemplaza CloudFormation)
-│   ├── modules/                      # Módulos reutilizables para mantener el código limpio
-│   │   ├── networking/               # VPC, Subnets (Públicas/Privadas), IGW, NAT Gateway 
-│   │   ├── compute/                  # ALB, Auto Scaling Group (Max 9), EC2 Bastion 
-│   │   ├── database/                 # RDS (t3.micro/medium, Single-AZ) 
-│   │   ├── security/                 # Security Groups, IAM Roles (Considerando Read-only )
-│   │   └── observability/            # CloudWatch Alarms, SNS, CloudTrail 
-│   ├── environments/
-│   │   └── sandbox/                  # Variables específicas para el entorno del proyecto
-│   │       ├── main.tf               # Invocación de módulos
-│   │       ├── variables.tf
-│   │       └── terraform.tfvars
-│   └── providers.tf                  # Configuración del provider de AWS
+├── terraform/                        # Infraestructura como Código (Terraform)
+│   ├── modules/                      # Módulos reutilizables
+│   │   ├── networking/               # VPC, Subnets, IGW, NAT
+│   │   ├── compute/                  # EC2, ASG (Work in progress)
+│   │   ├── database/                 # RDS (MySQL)
+│   └── environments/
+│       └── sandbox/                  # Entorno de desarrollo/pruebas
 │
-├── scripts/                          # User Data para EC2 y automatización 
-│   └── install_app.sh                # Script para instalar Node, dependencias y arrancar la app en EC2
-│
-├── docs/                             # Documentación solicitada 
-│   └── deployment_guide.md
+├── scripts/                          # Scripts de automatización
+│   └── install_app.sh                # Script de despliegue en EC2
 │
 └── README.md
-
 ```
+
 
 Infrastructure Diagram
 

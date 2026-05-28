@@ -133,4 +133,10 @@ variable "final_snapshot_identifier" {
   default     = "my-db-snapshot"
 }
 
+variable "ami_id" {
+  description = "AMI ID for EC2 instances"
+  type        = string
+  default     = "ami-0e2c8ccd4e022c147"
+}
+
 

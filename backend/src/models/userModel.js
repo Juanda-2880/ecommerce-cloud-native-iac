@@ -1,49 +1,47 @@
-const { pool } = require('../config/db');
+const User = require('./User');
+const Buyer = require('./Buyer');
+const Salesperson = require('./Salesperson');
+const { sequelize } = require('../config/db');
 
-const User = {
+const UserModel = {
   findByEmail: async (email) => {
-    const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
-    return rows[0];
+    return await User.findOne({ where: { email } });
   },
 
   findByUsername: async (username) => {
-    const [rows] = await pool.query('SELECT * FROM users WHERE username = ?', [username]);
-    return rows[0];
+    return await User.findOne({ where: { username } });
   },
 
   findById: async (id) => {
-    const [rows] = await pool.query('SELECT id, username, email, role FROM users WHERE id = ?', [id]);
-    return rows[0];
+    return await User.findByPk(id, {
+      attributes: ['id', 'username', 'email', 'role']
+    });
   },
 
   create: async (username, email, password, role) => {
-    const connection = await pool.getConnection();
+    const t = await sequelize.transaction();
+
     try {
-      await connection.beginTransaction();
+      const user = await User.create({
+        username,
+        email,
+        password,
+        role
+      }, { transaction: t });
 
-      // Insert into main users table
-      const [userResult] = await connection.query(
-        'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
-        [username, email, password, role]
-      );
-      const userId = userResult.insertId;
-
-      // Insert into specific "apart" table based on role
       if (role === 'salesperson') {
-        await connection.query('INSERT INTO salespeople (user_id) VALUES (?)', [userId]);
+        await Salesperson.create({ userId: user.id }, { transaction: t });
       } else {
-        await connection.query('INSERT INTO buyers (user_id) VALUES (?)', [userId]);
+        await Buyer.create({ userId: user.id }, { transaction: t });
       }
 
-      await connection.commit();
-      return userId;
+      await t.commit();
+      return user.id;
     } catch (err) {
-      await connection.rollback();
+      await t.rollback();
       throw err;
-    } finally {
-      connection.release();
     }
   }
 };
 
-module.exports = User;
+module.exports = UserModel;
