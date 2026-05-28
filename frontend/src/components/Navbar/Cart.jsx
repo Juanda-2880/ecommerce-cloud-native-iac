@@ -98,19 +98,31 @@ const Cart = () => {
                         )}
                     </div>
 
-                    <div className="border-t border-white/10 pt-4 space-y-4">
-                        <div className="flex justify-between items-center">
+                    <div className="border-t border-white/10 pt-4 space-y-3">
+                        <div className="flex justify-between items-center px-1">
                             <span className="text-[10px] font-black uppercase text-gray-500 tracking-widest">Total Transaction</span>
                             <span className="text-xl font-black text-primary italic">
                                 ${total.toLocaleString()}
                             </span>
                         </div>
-                        <button 
-                            disabled={cartItems.length === 0}
-                            className="btn btn-primary w-full rounded-xl font-black uppercase tracking-widest shadow-[0_0_15px_rgba(0,243,255,0.3)] disabled:opacity-20"
-                        >
-                            Commit Payment
-                        </button>
+                        <div className="flex flex-col gap-2">
+                            <button 
+                                onClick={() => {
+                                    const dropdown = document.activeElement;
+                                    if (dropdown) dropdown.blur();
+                                    window.location.href = '/basket';
+                                }}
+                                className="btn btn-ghost btn-sm w-full rounded-xl font-black uppercase tracking-widest text-[10px] border border-white/5 hover:bg-white/5"
+                            >
+                                View Full Basket
+                            </button>
+                            <button 
+                                disabled={cartItems.length === 0}
+                                className="btn btn-primary btn-sm w-full rounded-xl font-black uppercase tracking-widest text-[10px] shadow-[0_0_15px_rgba(0,243,255,0.3)] disabled:opacity-20"
+                            >
+                                Commit Payment
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
