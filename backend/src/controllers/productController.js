@@ -1,10 +1,35 @@
-const Product = require('../models/productModel');
+const { Product, User, sequelize } = require('../models');
+const { Op } = require('sequelize');
 
 const getAllProducts = async (req, res) => {
   try {
     const { search } = req.query;
-    const products = await Product.findAll({ search });
-    res.json(products);
+    const whereClause = { is_published: true };
+
+    if (search) {
+      whereClause[Op.or] = [
+        { name: { [Op.like]: `%${search}%` } },
+        { description: { [Op.like]: `%${search}%` } }
+      ];
+    }
+
+    const products = await Product.findAll({
+      where: whereClause,
+      include: [{
+        model: User,
+        as: 'seller',
+        attributes: ['username']
+      }],
+      order: [['created_at', 'DESC']]
+    });
+
+    // Map to include seller_name for compatibility
+    const formattedProducts = products.map(p => ({
+      ...p.toJSON(),
+      seller_name: p.seller ? p.seller.username : null
+    }));
+
+    res.json(formattedProducts);
   } catch (err) {
     console.error('Error in getAllProducts:', err);
     res.status(500).json({ error: err.message });
@@ -14,11 +39,23 @@ const getAllProducts = async (req, res) => {
 const getProductById = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await Product.findById(id);
+    const product = await Product.findByPk(id, {
+      include: [{
+        model: User,
+        as: 'seller',
+        attributes: ['username']
+      }]
+    });
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
     }
-    res.json(product);
+    
+    const formattedProduct = {
+      ...product.toJSON(),
+      seller_name: product.seller ? product.seller.username : null
+    };
+
+    res.json(formattedProduct);
   } catch (err) {
     console.error('Error in getProductById:', err);
     res.status(500).json({ error: err.message });
@@ -38,7 +75,7 @@ const createProduct = async (req, res) => {
       return res.status(403).json({ error: 'Access denied: Insufficient privileges.' });
     }
 
-    const productId = await Product.create({
+    const product = await Product.create({
       name,
       description,
       price_cop,
@@ -50,12 +87,12 @@ const createProduct = async (req, res) => {
       seller_id
     });
 
-    res.status(201).json({ message: `Success: Product "${name}" successfully added to inventory.`, productId });
+    res.status(201).json({ 
+      message: `Success: Product "${name}" successfully added to inventory.`, 
+      productId: product.id 
+    });
   } catch (err) {
     console.error('Error in createProduct:', err);
-    if (err.code === 'ER_NO_REFERENCED_ROW_2') {
-      return res.status(401).json({ error: 'Session invalid or user not found. Please log out and log in again.' });
-    }
     res.status(500).json({ error: err.message });
   }
 };
@@ -65,7 +102,23 @@ const getSellerProducts = async (req, res) => {
     const seller_id = req.user.id;
     const { search, is_published } = req.query;
 
-    const products = await Product.findAllBySeller(seller_id, { search, is_published });
+    const whereClause = { seller_id };
+
+    if (search) {
+      whereClause[Op.or] = [
+        { name: { [Op.like]: `%${search}%` } },
+        { description: { [Op.like]: `%${search}%` } }
+      ];
+    }
+
+    if (is_published !== undefined) {
+      whereClause.is_published = is_published === 'true' || is_published === true;
+    }
+
+    const products = await Product.findAll({
+      where: whereClause,
+      order: [['created_at', 'DESC']]
+    });
     res.json(products);
   } catch (err) {
     console.error('Error in getSellerProducts:', err);
@@ -79,7 +132,7 @@ const updateProduct = async (req, res) => {
     const { name, description, price_cop, quantity, product_condition, is_negotiable, image_url, is_published } = req.body;
     const seller_id = req.user.id;
 
-    const product = await Product.findById(id);
+    const product = await Product.findByPk(id);
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
     }
@@ -88,17 +141,18 @@ const updateProduct = async (req, res) => {
       return res.status(403).json({ error: 'You can only update your own products' });
     }
 
-    await Product.update(id, { 
-      name, 
-      description, 
-      price_cop, 
-      quantity: quantity || product.quantity, 
+    await product.update({ 
+      name: name || product.name, 
+      description: description || product.description, 
+      price_cop: price_cop || product.price_cop, 
+      quantity: quantity !== undefined ? quantity : product.quantity, 
       product_condition: product_condition || product.product_condition, 
-      is_negotiable, 
-      image_url, 
-      is_published 
+      is_negotiable: is_negotiable !== undefined ? is_negotiable : product.is_negotiable, 
+      image_url: image_url || product.image_url, 
+      is_published: is_published !== undefined ? is_published : product.is_published 
     });
-    res.json({ message: `Success: Product "${name || product.name}" updated.` });
+
+    res.json({ message: `Success: Product "${product.name}" updated.` });
   } catch (err) {
     console.error('Error in updateProduct:', err);
     res.status(500).json({ error: err.message });
@@ -110,7 +164,7 @@ const deleteProduct = async (req, res) => {
     const { id } = req.params;
     const seller_id = req.user.id;
 
-    const product = await Product.findById(id);
+    const product = await Product.findByPk(id);
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
     }
@@ -119,7 +173,7 @@ const deleteProduct = async (req, res) => {
       return res.status(403).json({ error: 'You can only delete your own products' });
     }
 
-    await Product.delete(id);
+    await product.destroy();
     res.json({ message: `Success: Product "${product.name}" has been deleted.` });
   } catch (err) {
     console.error('Error in deleteProduct:', err);

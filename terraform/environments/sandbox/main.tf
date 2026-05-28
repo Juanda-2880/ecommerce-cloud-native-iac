@@ -33,6 +33,8 @@ resource "local_file" "db_conf" {
     DB_HOST=${module.database.db_endpoint}
     DB_USER=${var.db_username}
     DB_PASS=${var.db_password}
+    MP_ACCESS_TOKEN=${var.mp_access_token}
+    FRONTEND_URL=${var.frontend_url}
     EOT
     filename = "/home/juanda/Documents/Universidad/Infra III/Proyecto/ecommerce-cloud-native-iac/.env"
 }

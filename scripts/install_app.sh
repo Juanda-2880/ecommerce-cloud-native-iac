@@ -19,7 +19,7 @@ npm --version
 echo "=== [3/5] Clonando repositorio ==="
 sudo mkdir -p $APP_DIR
 sudo git clone $REPO_URL $APP_DIR
-cd $APP_DIR/app
+cd $APP_DIR/backend
 
 echo "=== [4/5] Instalando dependencias ==="
 sudo npm ci --omit=dev

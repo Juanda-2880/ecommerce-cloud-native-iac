@@ -1,8 +1,7 @@
 const { MercadoPagoConfig, Preference } = require('mercadopago');
-const Order = require('../models/orderModel');
+const { Order, OrderItem, Product, sequelize } = require('../models');
 
 // Use environment variable or a more stable test token
-// This is a dummy token for sandbox testing - normally this would be in .env
 const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN || 'APP_USR-6523910931215443-052813-f65c91d9aef2cf40732ebe31-1834244304';
 
 const client = new MercadoPagoConfig({ 
@@ -10,25 +9,44 @@ const client = new MercadoPagoConfig({
 });
 
 const createPreference = async (req, res) => {
+  const t = await sequelize.transaction();
   try {
     const { items, total_amount } = req.body;
     const buyer_id = req.user.id;
 
     if (!items || items.length === 0) {
+      await t.rollback();
       return res.status(400).json({ error: 'Cannot create payment for empty cart' });
     }
 
     // Create a pending order in our DB
-    let orderId;
-    try {
-      orderId = await Order.create(buyer_id, total_amount, items);
-    } catch (dbErr) {
-      console.error('Database error creating order:', dbErr);
-      if (dbErr.code === 'ER_NO_REFERENCED_ROW_2') {
-        return res.status(401).json({ error: 'Session invalid. Please log out and log in again.' });
+    const order = await Order.create({
+      buyer_id,
+      total_amount,
+      status: 'pending' // Should be pending until payment is confirmed
+    }, { transaction: t });
+
+    // Create order items
+    for (const item of items) {
+      await OrderItem.create({
+        order_id: order.id,
+        product_id: item.id,
+        quantity: item.quantity,
+        price_at_purchase: item.price_cop
+      }, { transaction: t });
+
+      // Update product quantity and publish status
+      const product = await Product.findByPk(item.id, { transaction: t });
+      if (product) {
+        const newQuantity = product.quantity - item.quantity;
+        await product.update({
+          quantity: newQuantity,
+          is_published: newQuantity <= 0 ? false : product.is_published
+        }, { transaction: t });
       }
-      throw dbErr;
     }
+
+    await t.commit();
 
     const preference = new Preference(client);
     
@@ -49,7 +67,7 @@ const createPreference = async (req, res) => {
           failure: `${FRONTEND_URL}/basket`,
           pending: `${FRONTEND_URL}/order-history`
         },
-        external_reference: orderId.toString(),
+        external_reference: order.id.toString(),
       }
     };
 
@@ -69,6 +87,7 @@ const createPreference = async (req, res) => {
 
     res.json({ id: result.id, init_point: result.init_point });
   } catch (err) {
+    if (!t.finished) await t.rollback();
     console.error('MercadoPago Error Details FULL:', err);
     res.status(500).json({ error: 'MercadoPago integration error. Please check your credentials.' });
   }
@@ -84,6 +103,13 @@ const handleWebhook = async (req, res) => {
       // Here you would normally fetch the payment details from MP using the ID
       // and update the order status in the DB based on the status (approved, rejected, etc.)
       console.log(`Payment notification received for ID: ${paymentId}`);
+      
+      // Example update:
+      // const result = await payment.get({ id: paymentId });
+      // if (result.status === 'approved') {
+      //   const orderId = result.external_reference;
+      //   await Order.update({ status: 'completed' }, { where: { id: orderId } });
+      // }
     }
     res.sendStatus(200);
   } catch (err) {

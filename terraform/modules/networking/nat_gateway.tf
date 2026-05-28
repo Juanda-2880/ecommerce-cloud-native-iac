@@ -1,6 +1,7 @@
 resource "aws_eip" "nat_eip" {
   domain = "vpc"
   tags = { Name = "core-nat-eip" }
+  depends_on = [aws_internet_gateway.core_igw]
 }
 
 resource "aws_nat_gateway" "core_nat_gateway" {

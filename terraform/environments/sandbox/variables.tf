@@ -121,6 +121,19 @@ variable "db_password" {
   }
 }
 
+variable "mp_access_token" {
+    description = "Mercado Pago Access Token"
+    type = string
+    sensitive = true
+    default = ""
+}
+
+variable "frontend_url" {
+    description = "Frontend URL for back urls"
+    type = string
+    default = "http://localhost:8082"
+}
+
 variable "skip_final_snapshot" {
   description = "Omit final snapshot when deleting the instance"
   type        = bool
@@ -132,5 +145,3 @@ variable "final_snapshot_identifier" {
   type        = string
   default     = "my-db-snapshot"
 }
-
-

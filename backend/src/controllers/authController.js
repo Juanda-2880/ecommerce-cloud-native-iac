@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/userModel');
+const { User, Buyer, Salesperson, sequelize } = require('../models');
 const { JWT_SECRET } = require('../middleware/auth');
 
 const signup = async (req, res) => {
@@ -14,28 +14,48 @@ const signup = async (req, res) => {
     return res.status(400).json({ error: 'Invalid role selected' });
   }
 
-  try {
-    const existingEmail = await User.findByEmail(email);
-    const existingUsername = await User.findByUsername(username);
+  const t = await sequelize.transaction();
 
-    if (existingEmail || existingUsername) {
+  try {
+    const existingUser = await User.findOne({
+      where: {
+        [sequelize.Sequelize.Op.or]: [{ email }, { username }]
+      }
+    });
+
+    if (existingUser) {
+      await t.rollback();
       return res.status(400).json({ error: 'User with this email or username already exists' });
     }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const userId = await User.create(username, email, hashedPassword, role);
+    const user = await User.create({
+      username,
+      email,
+      password: hashedPassword,
+      role
+    }, { transaction: t });
+
+    if (role === 'salesperson') {
+      await Salesperson.create({ user_id: user.id }, { transaction: t });
+    } else {
+      await Buyer.create({ user_id: user.id }, { transaction: t });
+    }
+
+    await t.commit();
 
     // Auto-login after signup
-    const token = jwt.sign({ id: userId, username, role }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, username, role }, JWT_SECRET, { expiresIn: '1h' });
 
     res.cookie('token', token, { httpOnly: true }).status(201).json({
       message: 'User registered and logged in successfully!',
       token,
-      user: { id: userId, username, email, role }
+      user: { id: user.id, username, email, role }
     });
   } catch (err) {
+    await t.rollback();
     console.error('Signup error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -49,7 +69,7 @@ const login = async (req, res) => {
   }
 
   try {
-    const user = await User.findByEmail(email);
+    const user = await User.findOne({ where: { email } });
 
     if (!user) {
       return res.status(400).json({ error: 'Invalid email or password' });
@@ -75,7 +95,9 @@ const login = async (req, res) => {
 
 const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findByPk(req.user.id, {
+      attributes: ['id', 'username', 'email', 'role']
+    });
     res.json(user);
   } catch (err) {
     res.status(500).json({ error: 'Internal server error' });
@@ -87,22 +109,22 @@ const updateProfile = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    const user = await User.findByIdWithPassword(userId);
+    const user = await User.findByPk(userId);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
     // Check if new email/username is already taken by another user
-    if (email !== user.email) {
-      const existingEmail = await User.findByEmail(email);
+    if (email && email !== user.email) {
+      const existingEmail = await User.findOne({ where: { email } });
       if (existingEmail) return res.status(400).json({ error: 'Email already in use' });
     }
-    if (username !== user.username) {
-      const existingUsername = await User.findByUsername(username);
+    if (username && username !== user.username) {
+      const existingUsername = await User.findOne({ where: { username } });
       if (existingUsername) return res.status(400).json({ error: 'Username already taken' });
     }
 
-    let hashedPassword = null;
+    let hashedPassword = user.password;
     if (newPassword) {
       if (!oldPassword) {
         return res.status(400).json({ error: 'Old password is required to set a new one' });
@@ -115,14 +137,15 @@ const updateProfile = async (req, res) => {
       hashedPassword = await bcrypt.hash(newPassword, salt);
     }
 
-    await User.update(userId, {
-      username: username || user.username,
-      email: email || user.email,
-      password: hashedPassword
-    });
+    user.username = username || user.username;
+    user.email = email || user.email;
+    user.password = hashedPassword;
+    await user.save();
 
-    const updatedUser = await User.findById(userId);
-    res.json({ message: 'Profile updated successfully', user: updatedUser });
+    res.json({ 
+      message: 'Profile updated successfully', 
+      user: { id: user.id, username: user.username, email: user.email, role: user.role } 
+    });
   } catch (err) {
     console.error('Update profile error:', err);
     res.status(500).json({ error: 'Internal server error' });
@@ -131,7 +154,10 @@ const updateProfile = async (req, res) => {
 
 const deleteAccount = async (req, res) => {
   try {
-    await User.delete(req.user.id);
+    const user = await User.findByPk(req.user.id);
+    if (user) {
+      await user.destroy();
+    }
     res.clearCookie('token').json({ message: 'Account deleted successfully' });
   } catch (err) {
     console.error('Delete account error:', err);
