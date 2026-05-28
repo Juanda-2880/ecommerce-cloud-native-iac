@@ -21,6 +21,10 @@ const createProduct = async (req, res) => {
 
     res.status(201).json({ message: 'Product created successfully', productId });
   } catch (err) {
+    console.error('Error in createProduct:', err);
+    if (err.code === 'ER_NO_REFERENCED_ROW_2') {
+      return res.status(401).json({ error: 'Session invalid or user not found. Please log out and log in again.' });
+    }
     res.status(500).json({ error: err.message });
   }
 };
@@ -33,6 +37,7 @@ const getSellerProducts = async (req, res) => {
     const products = await Product.findAllBySeller(seller_id, { search, is_published });
     res.json(products);
   } catch (err) {
+    console.error('Error in getSellerProducts:', err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -55,6 +60,7 @@ const updateProduct = async (req, res) => {
     await Product.update(id, { name, description, price_cop, is_negotiable, image_url, is_published });
     res.json({ message: 'Product updated successfully' });
   } catch (err) {
+    console.error('Error in updateProduct:', err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -76,6 +82,7 @@ const deleteProduct = async (req, res) => {
     await Product.delete(id);
     res.json({ message: 'Product deleted successfully' });
   } catch (err) {
+    console.error('Error in deleteProduct:', err);
     res.status(500).json({ error: err.message });
   }
 };
