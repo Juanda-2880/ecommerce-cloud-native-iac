@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FaStore, FaBoxOpen, FaChartLine, FaWallet, FaPlus, FaSearch, FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa'
+import { FaStore, FaBoxOpen, FaChartLine, FaWallet, FaPlus, FaSearch, FaEdit, FaTrash, FaCheck, FaTimes, FaLayerGroup } from 'react-icons/fa'
 import { getSellerProducts, createProduct, updateProduct, deleteProduct } from '../services/productService'
 
 const SellerDashboard = () => {
@@ -8,10 +8,13 @@ const SellerDashboard = () => {
     const [filters, setFilters] = useState({ search: '', is_published: undefined })
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [editingProduct, setEditingProduct] = useState(null)
+    const [notification, setNotification] = useState(null)
     const [formData, setFormData] = useState({
         name: '',
         description: '',
         price_cop: '',
+        quantity: 1,
+        product_condition: 'new',
         is_negotiable: false,
         image_url: '',
         is_published: true
@@ -35,8 +38,25 @@ const SellerDashboard = () => {
             const data = await getSellerProducts(filters)
             setProducts(data)
         } catch (error) {
-            console.error('Error fetching products:', error)
+            showNotification(error.response?.data?.error || 'Failed to fetch inventory', 'error')
         }
+    }
+
+    const showNotification = (message, type = 'success') => {
+        setNotification({ message, type })
+        setTimeout(() => setNotification(null), 5000)
+    }
+
+    // Helper to format currency input with dots
+    const formatCurrency = (value) => {
+        if (!value) return ''
+        const number = value.toString().replace(/\D/g, '')
+        return number.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+    }
+
+    const handlePriceChange = (e) => {
+        const rawValue = e.target.value.replace(/\D/g, '')
+        setFormData(prev => ({ ...prev, price_cop: rawValue }))
     }
 
     const handleInputChange = (e) => {
@@ -49,25 +69,36 @@ const SellerDashboard = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        
+        if (!formData.name || !formData.price_cop) {
+            showNotification('Required: Name and Price are mandatory for deployment.', 'error')
+            return
+        }
+
         try {
+            let response
             if (editingProduct) {
-                await updateProduct(editingProduct.id, formData)
+                response = await updateProduct(editingProduct.id, formData)
             } else {
-                await createProduct(formData)
+                response = await createProduct(formData)
             }
+            
+            showNotification(response.message)
             setIsModalOpen(false)
             setEditingProduct(null)
             setFormData({
                 name: '',
                 description: '',
                 price_cop: '',
+                quantity: 1,
+                product_condition: 'new',
                 is_negotiable: false,
                 image_url: '',
                 is_published: true
             })
             fetchProducts()
         } catch (error) {
-            console.error('Error saving product:', error)
+            showNotification(error.response?.data?.error || 'Deployment failure', 'error')
         }
     }
 
@@ -76,7 +107,9 @@ const SellerDashboard = () => {
         setFormData({
             name: product.name,
             description: product.description,
-            price_cop: product.price_cop,
+            price_cop: Math.floor(product.price_cop).toString(),
+            quantity: product.quantity,
+            product_condition: product.product_condition,
             is_negotiable: product.is_negotiable === 1 || product.is_negotiable === true,
             image_url: product.image_url,
             is_published: product.is_published === 1 || product.is_published === true
@@ -84,26 +117,35 @@ const SellerDashboard = () => {
         setIsModalOpen(true)
     }
 
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this product?')) {
+    const handleDelete = async (product) => {
+        if (window.confirm(`Initiate deletion sequence for "${product.name}"? This action cannot be undone.`)) {
             try {
-                await deleteProduct(id)
+                const response = await deleteProduct(product.id)
+                showNotification(response.message)
                 fetchProducts()
             } catch (error) {
-                console.error('Error deleting product:', error)
+                showNotification(error.response?.data?.error || 'Deletion failed', 'error')
             }
         }
     }
 
     const stats = [
         { label: 'Active Products', value: products.filter(p => p.is_published).length, icon: <FaBoxOpen />, color: 'text-primary' },
-        { label: 'Total Sales', value: '$0.00', icon: <FaChartLine />, color: 'text-secondary' },
+        { label: 'Total Units', value: products.reduce((acc, p) => acc + (p.quantity || 0), 0), icon: <FaLayerGroup />, color: 'text-secondary' },
         { label: 'Wallet Balance', value: '$0.00', icon: <FaWallet />, color: 'text-accent' },
     ]
 
     return (
-        <div className="min-h-screen p-6 page-transition bg-base-100">
-            <header className="mb-10 flex justify-between items-center">
+        <div className="min-h-screen p-6 page-transition bg-base-100 relative">
+            {/* Notification Toast */}
+            {notification && (
+                <div className={`fixed top-24 right-6 z-[200] p-4 rounded-2xl border backdrop-blur-md shadow-2xl flex items-center gap-3 animate-bounce-short ${notification.type === 'success' ? 'bg-success/20 border-success text-success' : 'bg-error/20 border-error text-error'}`}>
+                    {notification.type === 'success' ? <FaCheck /> : <FaTimes />}
+                    <span className="font-black uppercase tracking-tight text-xs">{notification.message}</span>
+                </div>
+            )}
+
+            <header className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div className="flex items-center gap-4">
                     <div className="p-3 bg-secondary/20 rounded-2xl border border-secondary/30 shadow-[0_0_15px_rgba(255,0,255,0.2)]">
                         <FaStore className="text-3xl text-secondary" />
@@ -120,10 +162,10 @@ const SellerDashboard = () => {
                 <button 
                     onClick={() => {
                         setEditingProduct(null)
-                        setFormData({ name: '', description: '', price_cop: '', is_negotiable: false, image_url: '', is_published: true })
+                        setFormData({ name: '', description: '', price_cop: '', quantity: 1, product_condition: 'new', is_negotiable: false, image_url: '', is_published: true })
                         setIsModalOpen(true)
                     }}
-                    className="btn btn-primary gap-2 rounded-xl font-black uppercase tracking-widest shadow-[0_0_15px_rgba(0,243,255,0.3)]"
+                    className="btn btn-primary gap-2 rounded-xl font-black uppercase tracking-widest shadow-[0_0_15px_rgba(0,243,255,0.3)] w-full md:w-auto"
                 >
                     <FaPlus /> Deploy New Item
                 </button>
@@ -157,7 +199,7 @@ const SellerDashboard = () => {
                     />
                 </div>
                 <select 
-                    className="select select-bordered bg-base-200/50 border-white/10 focus:border-primary rounded-xl"
+                    className="select select-bordered bg-base-200/50 border-white/10 focus:border-primary rounded-xl w-full md:w-48"
                     value={filters.is_published === undefined ? '' : filters.is_published}
                     onChange={(e) => setFilters(prev => ({ ...prev, is_published: e.target.value === '' ? undefined : e.target.value === 'true' }))}
                 >
@@ -191,12 +233,20 @@ const SellerDashboard = () => {
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-gray-600 italic">No image provided</div>
                                 )}
-                                <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${product.is_published ? 'bg-success/20 text-success border border-success/30' : 'bg-warning/20 text-warning border border-warning/30'}`}>
-                                    {product.is_published ? 'Published' : 'Draft'}
+                                <div className="absolute top-4 left-4 flex gap-2">
+                                    <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${product.is_published ? 'bg-success/20 text-success border border-success/30' : 'bg-warning/20 text-warning border border-warning/30'}`}>
+                                        {product.is_published ? 'Published' : 'Draft'}
+                                    </div>
+                                    <div className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-accent/20 text-accent border border-accent/30">
+                                        {product.product_condition}
+                                    </div>
                                 </div>
                             </div>
                             <div className="p-6">
-                                <h3 className="text-xl font-black mb-1 uppercase tracking-tight text-white">{product.name}</h3>
+                                <div className="flex justify-between items-start mb-1">
+                                    <h3 className="text-xl font-black uppercase tracking-tight text-white">{product.name}</h3>
+                                    <div className="text-[10px] font-black text-gray-500 bg-white/5 px-2 py-1 rounded">QTY: {product.quantity}</div>
+                                </div>
                                 <p className="text-gray-500 text-sm mb-4 line-clamp-2">{product.description}</p>
                                 <div className="flex justify-between items-end mb-6">
                                     <div>
@@ -215,7 +265,7 @@ const SellerDashboard = () => {
                                         <FaEdit /> Edit
                                     </button>
                                     <button 
-                                        onClick={() => handleDelete(product.id)}
+                                        onClick={() => handleDelete(product)}
                                         className="btn btn-ghost border border-error/20 text-error hover:bg-error/10 rounded-xl"
                                     >
                                         <FaTrash />
@@ -231,8 +281,8 @@ const SellerDashboard = () => {
             {isModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-base-300/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
-                    <div className="bg-neutral-focus w-full max-w-2xl rounded-3xl border border-primary/20 shadow-2xl relative z-10 overflow-hidden">
-                        <div className="p-8 border-b border-white/5 flex justify-between items-center">
+                    <div className="bg-neutral-focus w-full max-w-2xl rounded-3xl border border-primary/20 shadow-2xl relative z-10 overflow-hidden max-h-[90vh] overflow-y-auto">
+                        <div className="p-8 border-b border-white/5 flex justify-between items-center sticky top-0 bg-neutral-focus z-10">
                             <h2 className="text-2xl font-black uppercase tracking-tighter">
                                 {editingProduct ? 'Update' : 'Deploy'} <span className="text-primary">Component</span>
                             </h2>
@@ -243,7 +293,7 @@ const SellerDashboard = () => {
                         <form onSubmit={handleSubmit} className="p-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 <div className="form-control">
-                                    <label className="label uppercase tracking-widest text-[10px] font-black text-gray-500">Item Name</label>
+                                    <label className="label uppercase tracking-widest text-[10px] font-black text-gray-500">Item Name *</label>
                                     <input 
                                         name="name"
                                         value={formData.name}
@@ -254,16 +304,43 @@ const SellerDashboard = () => {
                                     />
                                 </div>
                                 <div className="form-control">
-                                    <label className="label uppercase tracking-widest text-[10px] font-black text-gray-500">Price (COP)</label>
+                                    <label className="label uppercase tracking-widest text-[10px] font-black text-gray-500">Price (COP) *</label>
+                                    <div className="relative">
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-primary font-black">$</span>
+                                        <input 
+                                            type="text"
+                                            value={formatCurrency(formData.price_cop)}
+                                            onChange={handlePriceChange}
+                                            required
+                                            className="input input-bordered w-full pl-8 bg-base-200 border-white/10 rounded-xl focus:border-primary font-mono" 
+                                            placeholder="0"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-control">
+                                    <label className="label uppercase tracking-widest text-[10px] font-black text-gray-500">Quantity</label>
                                     <input 
                                         type="number"
-                                        name="price_cop"
-                                        value={formData.price_cop}
+                                        name="quantity"
+                                        min="1"
+                                        value={formData.quantity}
                                         onChange={handleInputChange}
-                                        required
                                         className="input input-bordered bg-base-200 border-white/10 rounded-xl focus:border-primary" 
-                                        placeholder="0.00"
                                     />
+                                </div>
+                                <div className="form-control">
+                                    <label className="label uppercase tracking-widest text-[10px] font-black text-gray-500">Condition</label>
+                                    <select 
+                                        name="product_condition"
+                                        value={formData.product_condition}
+                                        onChange={handleInputChange}
+                                        className="select select-bordered bg-base-200 border-white/10 rounded-xl focus:border-primary"
+                                    >
+                                        <option value="new">New</option>
+                                        <option value="used">Used</option>
+                                        <option value="refurbished">Refurbished</option>
+                                        <option value="open box">Open Box</option>
+                                    </select>
                                 </div>
                                 <div className="form-control md:col-span-2">
                                     <label className="label uppercase tracking-widest text-[10px] font-black text-gray-500">Description</label>

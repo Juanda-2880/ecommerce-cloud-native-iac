@@ -54,6 +54,8 @@ const initDB = async () => {
         name VARCHAR(255) NOT NULL,
         description TEXT,
         price_cop DECIMAL(15, 2) NOT NULL,
+        quantity INT DEFAULT 1,
+        product_condition ENUM('new', 'used', 'refurbished', 'open box') DEFAULT 'new',
         is_negotiable BOOLEAN DEFAULT FALSE,
         image_url VARCHAR(255),
         is_published BOOLEAN DEFAULT TRUE,

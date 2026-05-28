@@ -2,10 +2,10 @@ const { pool } = require('../config/db');
 
 const Product = {
   create: async (productData) => {
-    const { name, description, price_cop, is_negotiable, image_url, is_published, seller_id } = productData;
+    const { name, description, price_cop, quantity, product_condition, is_negotiable, image_url, is_published, seller_id } = productData;
     const [result] = await pool.query(
-      'INSERT INTO products (name, description, price_cop, is_negotiable, image_url, is_published, seller_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [name, description, price_cop, is_negotiable, image_url, is_published, seller_id]
+      'INSERT INTO products (name, description, price_cop, quantity, product_condition, is_negotiable, image_url, is_published, seller_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [name, description, price_cop, quantity, product_condition, is_negotiable, image_url, is_published, seller_id]
     );
     return result.insertId;
   },
@@ -36,10 +36,10 @@ const Product = {
   },
 
   update: async (id, productData) => {
-    const { name, description, price_cop, is_negotiable, image_url, is_published } = productData;
+    const { name, description, price_cop, quantity, product_condition, is_negotiable, image_url, is_published } = productData;
     await pool.query(
-      'UPDATE products SET name = ?, description = ?, price_cop = ?, is_negotiable = ?, image_url = ?, is_published = ? WHERE id = ?',
-      [name, description, price_cop, is_negotiable, image_url, is_published, id]
+      'UPDATE products SET name = ?, description = ?, price_cop = ?, quantity = ?, product_condition = ?, is_negotiable = ?, image_url = ?, is_published = ? WHERE id = ?',
+      [name, description, price_cop, quantity, product_condition, is_negotiable, image_url, is_published, id]
     );
   },
 
