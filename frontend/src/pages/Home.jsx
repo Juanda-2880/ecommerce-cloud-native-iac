@@ -1,13 +1,34 @@
-import { FaRocket, FaShieldAlt, FaBolt, FaStar } from 'react-icons/fa'
+import { useEffect, useState } from 'react'
+import { FaRocket, FaShieldAlt, FaBolt, FaStar, FaShoppingCart } from 'react-icons/fa'
 import { Link } from 'react-router'
+import { getProducts, addToCart } from '../services/shopService'
 
 const Home = () => {
-    const featuredProducts = [
-        { id: 1, name: 'Neon Pulsar-X', price: '$1,299', category: 'Hardware', color: 'border-primary' },
-        { id: 2, name: 'Cyber-Link v2', price: '$450', category: 'Software', color: 'border-secondary' },
-        { id: 3, name: 'Void Runner', price: '$89', category: 'Apparel', color: 'border-accent' },
-        { id: 4, name: 'Onyx Terminal', price: '$2,100', category: 'Hardware', color: 'border-primary' },
-    ]
+    const [products, setProducts] = useState([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const data = await getProducts()
+                setProducts(data)
+            } catch (error) {
+                console.error('Error fetching products:', error)
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchProducts()
+    }, [])
+
+    const handleAddToCart = async (productId) => {
+        try {
+            await addToCart(productId)
+            alert('Added to cart!')
+        } catch (error) {
+            alert(error.message)
+        }
+    }
 
     return (
         <div className="page-transition space-y-20 pb-20">
@@ -36,9 +57,9 @@ const Home = () => {
                         <Link to="/signup" className="btn btn-primary px-12 rounded-xl font-black uppercase tracking-widest h-14 shadow-[0_0_25px_rgba(0,243,255,0.4)] hover:scale-105 transition-all">
                             Initialize Account
                         </Link>
-                        <button className="btn btn-outline border-white/10 px-12 rounded-xl font-black uppercase tracking-widest h-14 hover:bg-white/5">
+                        <a href="#inventory" className="btn btn-outline border-white/10 px-12 rounded-xl font-black uppercase tracking-widest h-14 hover:bg-white/5">
                             Browse Inventory
-                        </button>
+                        </a>
                     </div>
                 </div>
             </section>
@@ -61,35 +82,43 @@ const Home = () => {
             </section>
 
             {/* Featured Grid */}
-            <section className="container mx-auto px-4">
+            <section id="inventory" className="container mx-auto px-4">
                 <div className="flex justify-between items-end mb-12">
                     <div>
-                        <h2 className="text-4xl font-black tracking-tighter uppercase italic">Featured <span className="text-primary">Inventory</span></h2>
+                        <h2 className="text-4xl font-black tracking-tighter uppercase italic">Operational <span className="text-primary">Inventory</span></h2>
                         <p className="text-gray-500 text-xs uppercase tracking-[0.2em] font-bold">Latest Operational Tech</p>
                     </div>
-                    <button className="text-xs font-black uppercase tracking-widest text-primary hover:text-secondary transition-colors underline underline-offset-8">
-                        View All
-                    </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {featuredProducts.map((product) => (
-                        <div key={product.id} className={`group relative p-4 bg-neutral/40 rounded-[2rem] border ${product.color}/10 hover:${product.color}/40 transition-all duration-500 cursor-pointer`}>
-                            <div className="aspect-square bg-neutral rounded-2xl mb-4 overflow-hidden relative">
-                                <div className="absolute inset-0 bg-gradient-to-tr from-black/60 to-transparent"></div>
-                                <div className="absolute top-3 left-3 px-2 py-1 rounded-md bg-black/60 backdrop-blur-md text-[8px] font-black uppercase tracking-widest text-white border border-white/10">
-                                    {product.category}
+                {loading ? (
+                    <div className="flex justify-center p-20">
+                        <span className="loading loading-orbit loading-lg text-primary"></span>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {products.map((product) => (
+                            <div key={product.id} className="group relative p-4 bg-neutral/40 rounded-[2rem] border border-white/5 hover:border-primary/40 transition-all duration-500">
+                                <div className="aspect-square bg-neutral rounded-2xl mb-4 overflow-hidden relative">
+                                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-black/60 to-transparent"></div>
+                                    <div className="absolute top-3 left-3 px-2 py-1 rounded-md bg-black/60 backdrop-blur-md text-[8px] font-black uppercase tracking-widest text-white border border-white/10">
+                                        HARDWARE
+                                    </div>
                                 </div>
+                                <h3 className="font-black uppercase tracking-tight mb-1 group-hover:text-primary transition-colors">{product.name}</h3>
+                                <p className="text-xs text-gray-500 mb-2 line-clamp-2">{product.description}</p>
+                                <p className="text-2xl font-black tracking-tighter text-white">${product.price}</p>
+                                
+                                <button 
+                                    onClick={() => handleAddToCart(product.id)}
+                                    className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-primary hover:text-neutral hover:border-primary transition-all shadow-xl opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0"
+                                >
+                                    <FaShoppingCart />
+                                </button>
                             </div>
-                            <h3 className="font-black uppercase tracking-tight mb-1 group-hover:text-primary transition-colors">{product.name}</h3>
-                            <p className="text-2xl font-black tracking-tighter">{product.price}</p>
-                            
-                            <button className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-primary hover:text-neutral hover:border-primary transition-all shadow-xl opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0">
-                                +
-                            </button>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
             </section>
 
             {/* Call to Action */}

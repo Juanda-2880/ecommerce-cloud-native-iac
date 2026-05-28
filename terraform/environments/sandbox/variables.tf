@@ -45,6 +45,22 @@ variable "dbport" {
     type = number
 }
 
+variable "ssh_key_name" {
+    description = "Name of the SSH key pair"
+    type = string
+}
+
+variable "ami_id" {
+    description = "AMI ID for the instances"
+    type = string
+}
+
+variable "instance_profile_arn" {
+    description = "Existing Instance Profile ARN"
+    type        = string
+    default     = "arn:aws:iam::248705478900:instance-profile/EC2-READ-IAM-ROLE"
+}
+
 variable "app_security_group_id" {
     description = "Permit Access to RDS"
     type = string

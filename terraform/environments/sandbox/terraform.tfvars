@@ -11,6 +11,9 @@ az2 = "us-east-1b"
 // PHASE 2
 
 dbport = 3306
+ssh_key_name = "vockey" 
+ami_id = "ami-0c101f26f147fa7fd" 
+instance_profile_arn = "arn:aws:iam::248705478900:instance-profile/EC2-READ-IAM-ROLE" 
 db_engine = "mysql"
 db_engine_version = "8.0"
 db_instance_class = "db.t3.micro"

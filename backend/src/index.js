@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const { initDB } = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
+const shopRoutes = require('./routes/shopRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,6 +20,7 @@ initDB();
 
 // Routes
 app.use('/api', authRoutes);
+app.use('/api', shopRoutes);
 
 // Health Check Route
 app.get('/api/health', (req, res) => {
