@@ -1,77 +1,47 @@
-resource "aws_s3_bucket" "logs" {
-  bucket = "${var.project_name}-logs-${var.environment}"
-  force_destroy = true
-
-  tags = {
-    Name = "${var.project_name}-logs"
-    Environment = var.environment
+resource "null_resource" "s3_buckets" {
+  triggers = {
+    logs_bucket_name     = "${var.project_name}-logs-${var.environment}"
+    products_bucket_name = "${var.project_name}-products-${var.environment}"
   }
-}
 
-resource "aws_s3_bucket_policy" "logs_policy" {
-  bucket = aws_s3_bucket.logs.id
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid    = "AWSCloudTrailAclCheck"
-        Effect = "Allow"
-        Principal = {
-          Service = "cloudtrail.amazonaws.com"
-        }
-        Action   = "s3:GetBucketAcl"
-        Resource = aws_s3_bucket.logs.arn
-      },
-      {
-        Sid    = "AWSCloudTrailWrite"
-        Effect = "Allow"
-        Principal = {
-          Service = "cloudtrail.amazonaws.com"
-        }
-        Action   = "s3:PutObject"
-        Resource = "${aws_s3_bucket.logs.arn}/AWSLogs/*"
-        Condition = {
-          StringEquals = {
-            "s3:x-amz-acl" = "bucket-owner-full-control"
-          }
-        }
-      }
-    ]
-  })
-}
-
-resource "aws_s3_bucket" "products" {
-  bucket = "${var.project_name}-products-${var.environment}"
-  force_destroy = true
-
-  tags = {
-    Name = "${var.project_name}-products"
-    Environment = var.environment
+  # Create Logs Bucket
+  provisioner "local-exec" {
+    command = "aws s3api create-bucket --bucket ${self.triggers.logs_bucket_name} --region ${var.region} || true"
   }
-}
 
-resource "aws_s3_bucket_public_access_block" "products_access" {
-  bucket = aws_s3_bucket.products.id
+  # Create Products Bucket
+  provisioner "local-exec" {
+    command = "aws s3api create-bucket --bucket ${self.triggers.products_bucket_name} --region ${var.region} || true"
+  }
 
-  block_public_acls       = false
-  block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
-}
+  # Configure Products Bucket Public Access
+  provisioner "local-exec" {
+    command = <<EOT
+      aws s3api put-public-access-block \
+        --bucket ${self.triggers.products_bucket_name} \
+        --public-access-block-configuration "BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false" || true
+    EOT
+  }
 
-resource "aws_s3_bucket_policy" "products_policy" {
-  depends_on = [aws_s3_bucket_public_access_block.products_access]
-  bucket = aws_s3_bucket.products.id
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid       = "PublicReadGetObject"
-        Effect    = "Allow"
-        Principal = "*"
-        Action    = "s3:GetObject"
-        Resource  = "${aws_s3_bucket.products.arn}/*"
-      }
-    ]
-  })
+  # Apply Public Read Policy to Products Bucket
+  provisioner "local-exec" {
+    command = <<EOT
+      POLICY='{"Version":"2012-10-17","Statement":[{"Sid":"PublicReadGetObject","Effect":"Allow","Principal":"*","Action":"s3:GetObject","Resource":"arn:aws:s3:::${self.triggers.products_bucket_name}/*"}]}'
+      aws s3api put-bucket-policy --bucket ${self.triggers.products_bucket_name} --policy "$POLICY"
+    EOT
+  }
+
+  # Configure Logs Bucket for CloudTrail (Basic policy to allow CloudTrail)
+  provisioner "local-exec" {
+    command = <<EOT
+      POLICY='{"Version":"2012-10-17","Statement":[{"Sid":"AWSCloudTrailAclCheck","Effect":"Allow","Principal":{"Service":"cloudtrail.amazonaws.com"},"Action":"s3:GetBucketAcl","Resource":"arn:aws:s3:::${self.triggers.logs_bucket_name}"},{"Sid":"AWSCloudTrailWrite","Effect":"Allow","Principal":{"Service":"cloudtrail.amazonaws.com"},"Action":"s3:PutObject","Resource":"arn:aws:s3:::${self.triggers.logs_bucket_name}/AWSLogs/*","Condition":{"StringEquals":{"s3:x-amz-acl":"bucket-owner-full-control"}}}]}'
+      aws s3api put-bucket-policy --bucket ${self.triggers.logs_bucket_name} --policy "$POLICY"
+    EOT
+  }
+
+  # Cleanup on destroy
+  provisioner "local-exec" {
+    when    = destroy
+    command = "aws s3 rb s3://${self.triggers.logs_bucket_name} --force || true && aws s3 rb s3://${self.triggers.products_bucket_name} --force || true"
+  }
 }

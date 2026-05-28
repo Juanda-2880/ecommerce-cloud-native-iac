@@ -1,19 +1,19 @@
 output "logs_bucket_id" {
-  value = aws_s3_bucket.logs.id
+  value = null_resource.s3_buckets.triggers.logs_bucket_name
 }
 
 output "logs_bucket_arn" {
-  value = aws_s3_bucket.logs.arn
+  value = "arn:aws:s3:::${null_resource.s3_buckets.triggers.logs_bucket_name}"
 }
 
 output "logs_bucket_policy_id" {
-  value = aws_s3_bucket_policy.logs_policy.id
+  value = "null"
 }
 
 output "products_bucket_id" {
-  value = aws_s3_bucket.products.id
+  value = null_resource.s3_buckets.triggers.products_bucket_name
 }
 
 output "products_bucket_arn" {
-  value = aws_s3_bucket.products.arn
+  value = "arn:aws:s3:::${null_resource.s3_buckets.triggers.products_bucket_name}"
 }

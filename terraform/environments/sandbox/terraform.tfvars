@@ -30,5 +30,5 @@ instance_type = "t3.micro"
 # Removed ssh_key_name as requested
 
 alert_email = "admin@example.com"
-project_name = "shoply-neon"
+project_name = "shoply-neon-4803740"
 environment = "sandbox"
