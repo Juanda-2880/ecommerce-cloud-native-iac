@@ -16,6 +16,10 @@ resource "aws_launch_template" "ec2_lt" {
     image_id = data.aws_ami.ubuntu_stable.id
     instance_type = var.instance_type
     
+    iam_instance_profile {
+        name = var.iam_instance_profile
+    }
+
     network_interfaces {
         associate_public_ip_address = false
         security_groups = [aws_security_group.ec2_sg.id]

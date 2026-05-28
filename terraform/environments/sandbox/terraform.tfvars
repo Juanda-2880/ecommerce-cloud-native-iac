@@ -28,3 +28,7 @@ asg_min_size = 2
 asg_desired_capacity = 2
 instance_type = "t3.micro"
 # Removed ssh_key_name as requested
+
+alert_email = "admin@example.com"
+project_name = "shoply-neon"
+environment = "sandbox"

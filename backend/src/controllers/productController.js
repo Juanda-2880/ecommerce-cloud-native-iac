@@ -64,8 +64,11 @@ const getProductById = async (req, res) => {
 
 const createProduct = async (req, res) => {
   try {
-    const { name, description, price_cop, quantity, product_condition, is_negotiable, image_url, is_published } = req.body;
+    const { name, description, price_cop, quantity, product_condition, is_negotiable, is_published } = req.body;
     const seller_id = req.user.id;
+    
+    // If a file was uploaded, use its S3 URL
+    const image_url = req.file ? req.file.location : req.body.image_url;
 
     if (!name || !price_cop) {
       return res.status(400).json({ error: 'Name and Price are mandatory parameters.' });
@@ -129,8 +132,11 @@ const getSellerProducts = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price_cop, quantity, product_condition, is_negotiable, image_url, is_published } = req.body;
+    const { name, description, price_cop, quantity, product_condition, is_negotiable, is_published } = req.body;
     const seller_id = req.user.id;
+
+    // If a file was uploaded, use its S3 URL
+    const final_image_url = req.file ? req.file.location : req.body.image_url;
 
     const product = await Product.findByPk(id);
     if (!product) {
@@ -148,7 +154,7 @@ const updateProduct = async (req, res) => {
       quantity: quantity !== undefined ? quantity : product.quantity, 
       product_condition: product_condition || product.product_condition, 
       is_negotiable: is_negotiable !== undefined ? is_negotiable : product.is_negotiable, 
-      image_url: image_url || product.image_url, 
+      image_url: final_image_url || product.image_url, 
       is_published: is_published !== undefined ? is_published : product.is_published 
     });
 

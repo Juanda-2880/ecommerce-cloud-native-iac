@@ -13,7 +13,11 @@ const getAuthHeaders = () => {
 };
 
 export const createProduct = async (productData) => {
-    const response = await axios.post(`${API_URL}/`, productData, getAuthHeaders());
+    const headers = getAuthHeaders();
+    if (productData instanceof FormData) {
+        headers.headers['Content-Type'] = 'multipart/form-data';
+    }
+    const response = await axios.post(`${API_URL}/`, productData, headers);
     return response.data;
 };
 
@@ -41,7 +45,11 @@ export const getSellerProducts = async (filters = {}) => {
 };
 
 export const updateProduct = async (id, productData) => {
-    const response = await axios.put(`${API_URL}/${id}`, productData, getAuthHeaders());
+    const headers = getAuthHeaders();
+    if (productData instanceof FormData) {
+        headers.headers['Content-Type'] = 'multipart/form-data';
+    }
+    const response = await axios.put(`${API_URL}/${id}`, productData, headers);
     return response.data;
 };
 

@@ -60,11 +60,18 @@ const SellerDashboard = () => {
     }
 
     const handleInputChange = (e) => {
-        const { name, value, type, checked } = e.target
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
-        }))
+        const { name, value, type, checked, files } = e.target
+        if (type === 'file') {
+            setFormData(prev => ({
+                ...prev,
+                image: files[0]
+            }))
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [name]: type === 'checkbox' ? checked : value
+            }))
+        }
     }
 
     const handleSubmit = async (e) => {
@@ -76,11 +83,18 @@ const SellerDashboard = () => {
         }
 
         try {
+            const data = new FormData();
+            Object.keys(formData).forEach(key => {
+                if (formData[key] !== undefined && formData[key] !== null) {
+                    data.append(key, formData[key]);
+                }
+            });
+
             let response
             if (editingProduct) {
-                response = await updateProduct(editingProduct.id, formData)
+                response = await updateProduct(editingProduct.id, data)
             } else {
-                response = await createProduct(formData)
+                response = await createProduct(data)
             }
             
             showNotification(response.message)
@@ -94,6 +108,7 @@ const SellerDashboard = () => {
                 product_condition: 'new',
                 is_negotiable: false,
                 image_url: '',
+                image: null,
                 is_published: true
             })
             fetchProducts()
@@ -162,9 +177,10 @@ const SellerDashboard = () => {
                 <button 
                     onClick={() => {
                         setEditingProduct(null)
-                        setFormData({ name: '', description: '', price_cop: '', quantity: 1, product_condition: 'new', is_negotiable: false, image_url: '', is_published: true })
+                        setFormData({ name: '', description: '', price_cop: '', quantity: 1, product_condition: 'new', is_negotiable: false, image_url: '', image: null, is_published: true })
                         setIsModalOpen(true)
                     }}
+
                     className="btn btn-primary gap-2 rounded-xl font-black uppercase tracking-widest shadow-[0_0_15px_rgba(0,243,255,0.3)] w-full md:w-auto"
                 >
                     <FaPlus /> Add New Product
@@ -359,14 +375,17 @@ const SellerDashboard = () => {
                                     ></textarea>
                                 </div>
                                 <div className="form-control md:col-span-2">
-                                    <label className="label uppercase tracking-widest text-[10px] font-black text-gray-500">Image URL</label>
+                                    <label className="label uppercase tracking-widest text-[10px] font-black text-gray-500">Product Image</label>
                                     <input 
-                                        name="image_url"
-                                        value={formData.image_url}
+                                        type="file"
+                                        name="image"
                                         onChange={handleInputChange}
-                                        className="input input-bordered bg-base-200 border-white/10 rounded-xl focus:border-primary" 
-                                        placeholder="https://images.com/product.jpg"
+                                        accept="image/*"
+                                        className="file-input file-input-bordered w-full bg-base-200 border-white/10 rounded-xl focus:border-primary" 
                                     />
+                                    {formData.image_url && !formData.image && (
+                                        <p className="text-[10px] mt-2 text-gray-500 italic">Current image: {formData.image_url}</p>
+                                    )}
                                 </div>
                                 <div className="flex items-center gap-6 md:col-span-2">
                                     <label className="flex items-center gap-2 cursor-pointer group">

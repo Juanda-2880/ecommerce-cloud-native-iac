@@ -49,4 +49,11 @@ variable "db_user" { type = string }
 variable "db_pass" { type = string }
 variable "db_name" { type = string }
 variable "mp_token" { type = string }
-variable "frontend_url" { type = string }
+variable "frontend_url" {
+    type = string
+}
+
+variable "iam_instance_profile" {
+    type = string
+}
+

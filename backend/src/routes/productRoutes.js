@@ -9,6 +9,7 @@ const {
   getProductById
 } = require('../controllers/productController');
 const { authenticateToken } = require('../middleware/auth');
+const upload = require('../middleware/upload');
 
 // Public routes
 router.get('/', getAllProducts);
@@ -16,9 +17,9 @@ router.get('/', getAllProducts);
 // Protected routes require authentication
 router.use(authenticateToken);
 
-router.post('/', createProduct);
+router.post('/', upload.single('image'), createProduct);
 router.get('/seller', getSellerProducts);
-router.put('/:id', updateProduct);
+router.put('/:id', upload.single('image'), updateProduct);
 router.delete('/:id', deleteProduct);
 
 // Public route with parameter (put last to avoid hijacking other routes)

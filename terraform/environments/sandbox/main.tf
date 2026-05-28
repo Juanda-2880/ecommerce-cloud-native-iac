@@ -46,6 +46,34 @@ module "compute" {
     db_name      = var.db_name
     mp_token     = var.mp_access_token
     frontend_url = var.frontend_url
+
+    # IAM Profile
+    iam_instance_profile = module.security.ec2_instance_profile_name
+}
+
+// PHASE 4 - STORAGE & OBSERVABILITY
+
+module "storage" {
+  source       = "../../modules/storage"
+  project_name = var.project_name
+  environment  = var.environment
+}
+
+module "security" {
+  source              = "../../modules/security"
+  project_name        = var.project_name
+  environment         = var.environment
+  products_bucket_arn = module.storage.products_bucket_arn
+}
+
+module "observability" {
+  source                = "../../modules/observability"
+  project_name          = var.project_name
+  environment           = var.environment
+  alert_email           = var.alert_email
+  asg_name              = "app-asg" # From compute module asg.tf
+  logs_bucket_id        = module.storage.logs_bucket_id
+  logs_bucket_policy_id = module.storage.logs_bucket_policy_id
 }
 
 // AUTOMATION OF THE DB CONECTION WITH THE BACKEND
@@ -57,6 +85,8 @@ resource "local_file" "db_conf" {
     DB_PASS=${var.db_password}
     MP_ACCESS_TOKEN=${var.mp_access_token}
     FRONTEND_URL=${var.frontend_url}
+    S3_BUCKET_PRODUCTS=${module.storage.products_bucket_id}
+    AWS_REGION=${var.region}
     EOT
     filename = "/home/juanda/Documents/Universidad/Infra III/Proyecto/ecommerce-cloud-native-iac/.env"
 }
