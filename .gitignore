@@ -11,3 +11,5 @@ crash.log
 # Ignore any .exe or binary provider files
 *.exe
 terraform-provider-*
+.env
+.env*
