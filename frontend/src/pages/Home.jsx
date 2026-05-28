@@ -1,112 +1,155 @@
-import { FaRocket, FaShieldAlt, FaBolt, FaStar } from 'react-icons/fa'
-import { Link } from 'react-router'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router'
+import { getAllProducts } from '../services/productService'
+import { FaSearch, FaArrowRight, FaUser, FaTag } from 'react-icons/fa'
+import heroImage from '../assets/hero.png'
 
 const Home = () => {
-    const featuredProducts = [
-        { id: 1, name: 'Neon Pulsar-X', price: '$1,299', category: 'Hardware', color: 'border-primary' },
-        { id: 2, name: 'Cyber-Link v2', price: '$450', category: 'Software', color: 'border-secondary' },
-        { id: 3, name: 'Void Runner', price: '$89', category: 'Apparel', color: 'border-accent' },
-        { id: 4, name: 'Onyx Terminal', price: '$2,100', category: 'Hardware', color: 'border-primary' },
-    ]
+    const navigate = useNavigate()
+    const [products, setProducts] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [searchQuery, setSearchQuery] = useState('')
+
+    useEffect(() => {
+        fetchProducts()
+    }, [])
+
+    const fetchProducts = async (search = '') => {
+        setLoading(true)
+        try {
+            const data = await getAllProducts({ search })
+            setProducts(data)
+        } catch (error) {
+            console.error('Error fetching marketplace:', error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleSearch = (e) => {
+        e.preventDefault()
+        fetchProducts(searchQuery)
+    }
 
     return (
-        <div className="page-transition space-y-20 pb-20">
+        <div className="min-h-screen bg-base-100 page-transition">
             {/* Hero Section */}
-            <section className="relative overflow-hidden pt-20 pb-32">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-primary/10 rounded-full blur-[120px] -z-10 animate-pulse"></div>
+            <section className="relative h-[60vh] overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-base-100 via-base-100/80 to-transparent z-10"></div>
+                <img src={heroImage} alt="Cyberpunk City" className="absolute inset-0 w-full h-full object-cover opacity-50" />
                 
-                <div className="container mx-auto px-4 text-center">
-                    <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-8 animate-fade-in">
-                        <FaBolt className="animate-pulse" /> Next-Gen Commerce
+                <div className="container mx-auto px-6 h-full flex flex-col justify-center relative z-20">
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="w-12 h-1 bg-primary rounded-full shadow-[0_0_10px_rgba(0,243,255,0.8)]"></div>
+                        <span className="text-[10px] uppercase font-black tracking-[0.5em] text-primary">Neural Marketplace v2.0</span>
                     </div>
-                    
-                    <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase italic mb-6 leading-none">
-                        Warp into the <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent drop-shadow-[0_0_15px_rgba(0,243,255,0.4)]">
-                            Future
-                        </span>
+                    <h1 className="text-7xl font-black uppercase tracking-tighter text-white mb-6 italic leading-none">
+                        GEAR UP FOR THE <br />
+                        <span className="text-primary drop-shadow-[0_0_15px_rgba(0,243,255,0.5)]">NEXT FRONTIER</span>
                     </h1>
-                    
-                    <p className="max-w-2xl mx-auto text-gray-400 text-lg mb-12 font-medium tracking-tight">
-                        Experience the first cloud-native terminal for high-performance trading. 
-                        Join the <span className="text-white font-bold">Neon Revolution</span> with Shoply.
+                    <p className="max-w-xl text-gray-400 font-bold text-lg uppercase tracking-tight mb-8">
+                        The ultimate decentralized node for high-end tech, 
+                        black-market components, and cybernetic enhancements.
                     </p>
-                    
-                    <div className="flex flex-wrap justify-center gap-4">
-                        <Link to="/signup" className="btn btn-primary px-12 rounded-xl font-black uppercase tracking-widest h-14 shadow-[0_0_25px_rgba(0,243,255,0.4)] hover:scale-105 transition-all">
-                            Initialize Account
-                        </Link>
-                        <button className="btn btn-outline border-white/10 px-12 rounded-xl font-black uppercase tracking-widest h-14 hover:bg-white/5">
-                            Browse Inventory
+
+                    <form onSubmit={handleSearch} className="max-w-2xl relative group">
+                        <FaSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-primary text-xl transition-all group-focus-within:scale-125" />
+                        <input 
+                            type="text" 
+                            placeholder="SCAN THE REGISTRY FOR COMPONENTS..." 
+                            className="input input-bordered w-full h-16 pl-16 pr-32 bg-neutral/80 backdrop-blur-md border-primary/20 rounded-2xl focus:border-primary font-black uppercase tracking-widest text-xs shadow-2xl"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 btn btn-primary px-8 rounded-xl font-black uppercase tracking-widest text-[10px] h-10 min-h-0">
+                            Search
                         </button>
-                    </div>
+                    </form>
                 </div>
             </section>
 
-            {/* Features Section */}
-            <section className="container mx-auto px-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {[
-                        { icon: <FaRocket />, title: 'Hyper Speed', desc: 'Zero-latency transactions powered by edge computing.' },
-                        { icon: <FaShieldAlt />, title: 'Void Guard', desc: 'End-to-end encryption for every packet of data.' },
-                        { icon: <FaStar />, title: 'Elite Tier', desc: 'Exclusive access to experimental hardware releases.' }
-                    ].map((feature, i) => (
-                        <div key={i} className="p-8 bg-neutral/30 rounded-3xl border border-white/5 backdrop-blur-sm hover:border-primary/20 transition-colors group">
-                            <div className="text-3xl text-primary mb-6 group-hover:scale-110 transition-transform">{feature.icon}</div>
-                            <h3 className="text-xl font-black uppercase tracking-tight mb-2">{feature.title}</h3>
-                            <p className="text-gray-500 text-sm leading-relaxed">{feature.desc}</p>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Featured Grid */}
-            <section className="container mx-auto px-4">
+            {/* Marketplace Grid */}
+            <section className="container mx-auto px-6 py-20">
                 <div className="flex justify-between items-end mb-12">
                     <div>
-                        <h2 className="text-4xl font-black tracking-tighter uppercase italic">Featured <span className="text-primary">Inventory</span></h2>
-                        <p className="text-gray-500 text-xs uppercase tracking-[0.2em] font-bold">Latest Operational Tech</p>
+                        <h2 className="text-4xl font-black uppercase tracking-tighter text-white italic">Active <span className="text-secondary">Deployments</span></h2>
+                        <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Real-time synchronization with seller nodes</p>
                     </div>
-                    <button className="text-xs font-black uppercase tracking-widest text-primary hover:text-secondary transition-colors underline underline-offset-8">
-                        View All
-                    </button>
+                    <div className="text-[10px] font-black uppercase tracking-widest text-gray-500 bg-neutral/30 px-4 py-2 rounded-full border border-white/5">
+                        {products.length} Items Found
+                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {featuredProducts.map((product) => (
-                        <div key={product.id} className={`group relative p-4 bg-neutral/40 rounded-[2rem] border ${product.color}/10 hover:${product.color}/40 transition-all duration-500 cursor-pointer`}>
-                            <div className="aspect-square bg-neutral rounded-2xl mb-4 overflow-hidden relative">
-                                <div className="absolute inset-0 bg-gradient-to-tr from-black/60 to-transparent"></div>
-                                <div className="absolute top-3 left-3 px-2 py-1 rounded-md bg-black/60 backdrop-blur-md text-[8px] font-black uppercase tracking-widest text-white border border-white/10">
-                                    {product.category}
+                {loading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {[1, 2, 4, 8].map(i => (
+                            <div key={i} className="h-[450px] bg-neutral/20 rounded-[2.5rem] animate-pulse border border-white/5"></div>
+                        ))}
+                    </div>
+                ) : products.length === 0 ? (
+                    <div className="bg-neutral/20 border border-white/5 rounded-[3rem] p-20 text-center border-dashed border-2">
+                        <FaSearch className="text-6xl text-gray-700 mx-auto mb-6" />
+                        <h3 className="text-2xl font-black uppercase text-white mb-2">Registry Empty</h3>
+                        <p className="text-gray-500 uppercase font-bold tracking-widest text-xs">No components match your search parameters.</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                        {products.map((product) => (
+                            <div 
+                                key={product.id} 
+                                onClick={() => navigate(`/product/${product.id}`)}
+                                className="group bg-neutral/40 border border-white/5 backdrop-blur-md rounded-[2.5rem] overflow-hidden transition-all duration-500 hover:border-primary/30 hover:-translate-y-2 cursor-pointer shadow-xl hover:shadow-primary/10"
+                            >
+                                <div className="h-64 bg-base-300 relative overflow-hidden">
+                                    {product.image_url ? (
+                                        <img 
+                                            src={product.image_url} 
+                                            alt={product.name} 
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-gray-700 italic font-bold">No visual data</div>
+                                    )}
+                                    <div className="absolute top-4 right-4 px-3 py-1 bg-black/60 backdrop-blur-md rounded-full text-[9px] font-black uppercase tracking-widest text-primary border border-primary/20">
+                                        {product.product_condition}
+                                    </div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                                        <button className="btn btn-primary w-full rounded-xl font-black uppercase tracking-widest text-[10px] gap-2">
+                                            View Details <FaArrowRight className="text-[10px]" />
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="p-6">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h3 className="text-xl font-black uppercase tracking-tight text-white group-hover:text-primary transition-colors truncate pr-2">
+                                            {product.name}
+                                        </h3>
+                                    </div>
+                                    <p className="text-gray-500 text-xs mb-6 line-clamp-2 leading-relaxed">
+                                        {product.description}
+                                    </p>
+                                    
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <div className="w-6 h-6 bg-secondary/20 rounded-full flex items-center justify-center">
+                                            <FaUser className="text-[10px] text-secondary" />
+                                        </div>
+                                        <span className="text-[10px] font-black uppercase text-gray-500 tracking-widest">{product.seller_name}</span>
+                                    </div>
+
+                                    <div className="flex justify-between items-end border-t border-white/5 pt-4">
+                                        <div className="text-2xl font-black text-white italic">
+                                            ${Number(product.price_cop).toLocaleString()}
+                                            <span className="text-[10px] ml-1 text-primary">COP</span>
+                                        </div>
+                                        <div className="text-[9px] font-black text-gray-500 uppercase tracking-widest bg-white/5 px-2 py-1 rounded">
+                                            QTY: {product.quantity}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <h3 className="font-black uppercase tracking-tight mb-1 group-hover:text-primary transition-colors">{product.name}</h3>
-                            <p className="text-2xl font-black tracking-tighter">{product.price}</p>
-                            
-                            <button className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-primary hover:text-neutral hover:border-primary transition-all shadow-xl opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0">
-                                +
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Call to Action */}
-            <section className="container mx-auto px-4 py-20">
-                <div className="bg-gradient-to-br from-neutral/60 to-base-100 p-12 md:p-20 rounded-[3rem] border border-white/5 text-center relative overflow-hidden">
-                    <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-secondary/10 rounded-full blur-[100px] animate-pulse"></div>
-                    
-                    <h2 className="text-4xl md:text-6xl font-black tracking-tighter uppercase italic mb-8">
-                        Ready to <span className="text-secondary">Execute</span>?
-                    </h2>
-                    <p className="max-w-xl mx-auto text-gray-400 mb-12">
-                        Don't just watch the future. Own it. Create your terminal account and start trading in the neon ecosystem today.
-                    </p>
-                    <Link to="/signup" className="btn btn-secondary px-12 rounded-xl font-black uppercase tracking-widest h-14 shadow-[0_0_25px_rgba(255,0,255,0.3)]">
-                        Initialize Deployment
-                    </Link>
-                </div>
+                        ))}
+                    </div>
+                )}
             </section>
         </div>
     )

@@ -17,6 +17,19 @@ export const createProduct = async (productData) => {
     return response.data;
 };
 
+export const getAllProducts = async (filters = {}) => {
+    const { search } = filters;
+    let url = `${API_URL}/`;
+    if (search) url += `?search=${search}`;
+    const response = await axios.get(url);
+    return response.data;
+};
+
+export const getProductById = async (id) => {
+    const response = await axios.get(`${API_URL}/${id}`);
+    return response.data;
+};
+
 export const getSellerProducts = async (filters = {}) => {
     const { search, is_published } = filters;
     let url = `${API_URL}/seller?`;

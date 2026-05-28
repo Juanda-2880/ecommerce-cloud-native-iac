@@ -10,6 +10,36 @@ const Product = {
     return result.insertId;
   },
 
+  findAll: async (filters = {}) => {
+    let query = `
+      SELECT p.*, u.username as seller_name 
+      FROM products p 
+      JOIN users u ON p.seller_id = u.id 
+      WHERE p.is_published = TRUE
+    `;
+    const params = [];
+
+    if (filters.search) {
+      query += ' AND (p.name LIKE ? OR p.description LIKE ?)';
+      params.push(`%${filters.search}%`, `%${filters.search}%`);
+    }
+
+    query += ' ORDER BY p.created_at DESC';
+
+    const [rows] = await pool.query(query, params);
+    return rows;
+  },
+
+  findById: async (id) => {
+    const [rows] = await pool.query(`
+      SELECT p.*, u.username as seller_name 
+      FROM products p 
+      JOIN users u ON p.seller_id = u.id 
+      WHERE p.id = ?
+    `, [id]);
+    return rows[0];
+  },
+
   findAllBySeller: async (seller_id, filters = {}) => {
     let query = 'SELECT * FROM products WHERE seller_id = ?';
     const params = [seller_id];
@@ -28,11 +58,6 @@ const Product = {
 
     const [rows] = await pool.query(query, params);
     return rows;
-  },
-
-  findById: async (id) => {
-    const [rows] = await pool.query('SELECT * FROM products WHERE id = ?', [id]);
-    return rows[0];
   },
 
   update: async (id, productData) => {

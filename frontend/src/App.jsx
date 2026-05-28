@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Signup from './pages/Register'
 import SellerDashboard from './pages/SellerDashboard'
 import AccountSettings from './pages/AccountSettings'
+import ProductDetail from './pages/ProductDetail'
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                     <Route path="signup" element={<Signup />} />
                     <Route path="seller-dashboard" element={<SellerDashboard />} />
                     <Route path="account-settings" element={<AccountSettings />} />
+                    <Route path="product/:id" element={<ProductDetail />} />
                 </Route>
             </Routes>
         </div>

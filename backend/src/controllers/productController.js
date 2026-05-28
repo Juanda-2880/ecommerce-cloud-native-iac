@@ -1,5 +1,30 @@
 const Product = require('../models/productModel');
 
+const getAllProducts = async (req, res) => {
+  try {
+    const { search } = req.query;
+    const products = await Product.findAll({ search });
+    res.json(products);
+  } catch (err) {
+    console.error('Error in getAllProducts:', err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const getProductById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.json(product);
+  } catch (err) {
+    console.error('Error in getProductById:', err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
 const createProduct = async (req, res) => {
   try {
     const { name, description, price_cop, quantity, product_condition, is_negotiable, image_url, is_published } = req.body;
@@ -106,5 +131,7 @@ module.exports = {
   createProduct,
   getSellerProducts,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  getAllProducts,
+  getProductById
 };
