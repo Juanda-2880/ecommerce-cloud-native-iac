@@ -15,7 +15,7 @@ module "networking" {
 module "database" {
     source = "../../modules/database"
     dbport = var.dbport
-    app_security_group_id = var.app_security_group_id
+    app_security_group_id = module.compute.ec2_security_group_id
     vpc_id = module.networking.vpc_id
     subnet_ids = module.networking.private_subnet_ids
     db_engine = var.db_engine
@@ -24,6 +24,28 @@ module "database" {
     db_name = var.db_name
     db_username = var.db_username
     db_password = var.db_password
+}
+
+// PHASE 3
+
+module "compute" {
+    source = "../../modules/compute"
+    vpc_id = module.networking.vpc_id
+    public_subnet_ids = module.networking.public_subnet_ids
+    private_subnet_ids = module.networking.private_subnet_ids
+    app_port = var.app_port
+    max_size = var.asg_max_size
+    min_size = var.asg_min_size
+    desired_capacity = var.asg_desired_capacity
+    instance_type = var.instance_type
+    
+    # Pass variables for User Data interpolation
+    db_host      = module.database.db_endpoint
+    db_user      = var.db_username
+    db_pass      = var.db_password
+    db_name      = var.db_name
+    mp_token     = var.mp_access_token
+    frontend_url = var.frontend_url
 }
 
 // AUTOMATION OF THE DB CONECTION WITH THE BACKEND
@@ -38,4 +60,3 @@ resource "local_file" "db_conf" {
     EOT
     filename = "/home/juanda/Documents/Universidad/Infra III/Proyecto/ecommerce-cloud-native-iac/.env"
 }
-

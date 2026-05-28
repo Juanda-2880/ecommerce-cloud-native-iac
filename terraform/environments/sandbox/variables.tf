@@ -145,3 +145,35 @@ variable "final_snapshot_identifier" {
   type        = string
   default     = "my-db-snapshot"
 }
+
+// PHASE 3 - COMPUTE
+
+variable "app_port" {
+  description = "Port for the application"
+  type        = number
+  default     = 5000
+}
+
+variable "asg_max_size" {
+  description = "Max size of ASG"
+  type        = number
+  default     = 5
+}
+
+variable "asg_min_size" {
+  description = "Min size of ASG"
+  type        = number
+  default     = 2
+}
+
+variable "asg_desired_capacity" {
+  description = "Desired capacity of ASG"
+  type        = number
+  default     = 2
+}
+
+variable "instance_type" {
+  description = "EC2 instance type"
+  type        = string
+  default     = "t3.micro"
+}

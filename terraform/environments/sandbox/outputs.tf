@@ -74,3 +74,8 @@ output "db_env_config" {
   sensitive   = true
   value       = module.database.db_env_config
 }
+
+output "alb_dns_name" {
+  description = "DNS name of the Application Load Balancer"
+  value       = module.compute.alb_dns_name
+}
