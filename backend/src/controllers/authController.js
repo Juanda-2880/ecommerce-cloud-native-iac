@@ -82,4 +82,61 @@ const getProfile = async (req, res) => {
   }
 };
 
-module.exports = { signup, login, getProfile };
+const updateProfile = async (req, res) => {
+  const { username, email, oldPassword, newPassword } = req.body;
+  const userId = req.user.id;
+
+  try {
+    const user = await User.findByIdWithPassword(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Check if new email/username is already taken by another user
+    if (email !== user.email) {
+      const existingEmail = await User.findByEmail(email);
+      if (existingEmail) return res.status(400).json({ error: 'Email already in use' });
+    }
+    if (username !== user.username) {
+      const existingUsername = await User.findByUsername(username);
+      if (existingUsername) return res.status(400).json({ error: 'Username already taken' });
+    }
+
+    let hashedPassword = null;
+    if (newPassword) {
+      if (!oldPassword) {
+        return res.status(400).json({ error: 'Old password is required to set a new one' });
+      }
+      const validPassword = await bcrypt.compare(oldPassword, user.password);
+      if (!validPassword) {
+        return res.status(400).json({ error: 'Incorrect old password' });
+      }
+      const salt = await bcrypt.genSalt(10);
+      hashedPassword = await bcrypt.hash(newPassword, salt);
+    }
+
+    await User.update(userId, {
+      username: username || user.username,
+      email: email || user.email,
+      password: hashedPassword
+    });
+
+    const updatedUser = await User.findById(userId);
+    res.json({ message: 'Profile updated successfully', user: updatedUser });
+  } catch (err) {
+    console.error('Update profile error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+const deleteAccount = async (req, res) => {
+  try {
+    await User.delete(req.user.id);
+    res.clearCookie('token').json({ message: 'Account deleted successfully' });
+  } catch (err) {
+    console.error('Delete account error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+module.exports = { signup, login, getProfile, updateProfile, deleteAccount };

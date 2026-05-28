@@ -16,6 +16,31 @@ const User = {
     return rows[0];
   },
 
+  findByIdWithPassword: async (id) => {
+    const [rows] = await pool.query('SELECT * FROM users WHERE id = ?', [id]);
+    return rows[0];
+  },
+
+  update: async (id, userData) => {
+    const { username, email, password } = userData;
+    let query = 'UPDATE users SET username = ?, email = ?';
+    const params = [username, email];
+
+    if (password) {
+      query += ', password = ?';
+      params.push(password);
+    }
+
+    query += ' WHERE id = ?';
+    params.push(id);
+
+    await pool.query(query, params);
+  },
+
+  delete: async (id) => {
+    await pool.query('DELETE FROM users WHERE id = ?', [id]);
+  },
+
   create: async (username, email, password, role) => {
     const connection = await pool.getConnection();
     try {
