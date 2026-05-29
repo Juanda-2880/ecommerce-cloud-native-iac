@@ -64,6 +64,11 @@ Shoply Neon is a scalable, highly available e-commerce platform built with a clo
 - **Frontend:** React, Tailwind CSS
 - **Proxy/Web Server:** Nginx, PM2
 
+## Infrastructure diagram
+
+<img src="image.png" alt="Diagrama de Terraform" width="600"/>
+
+
 ## 📖 Documentation
 
 For more details, please refer to the files in the `docs/` directory:
