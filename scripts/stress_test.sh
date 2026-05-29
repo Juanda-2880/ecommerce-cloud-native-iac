@@ -29,7 +29,7 @@ echo "Monitoring should trigger 'high-cpu' alarm in CloudWatch."
 # --io: Spawn workers spinning on sync()
 # --vm: Spawn workers spinning on malloc()/free()
 # --vm-bytes: Each VM worker uses 256M
-sudo stress --cpu $((CPU_CORES * 2)) --io 4 --vm 2 --vm-bytes 256M --timeout ${DURATION}s
+sudo stress --cpu $((CPU_CORES * 6)) --io 4 --vm 2 --vm-bytes 256M --timeout ${DURATION}s
 
 echo "=== Stress Test Complete ==="
 echo "Wait a few minutes for the ASG to scale down if no further load is detected."

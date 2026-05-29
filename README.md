@@ -1,47 +1,75 @@
-Project Structure
-```
+# Shoply Neon - Cloud Native E-commerce
+
+[![Infrastructure: Terraform](https://img.shields.io/badge/Infrastructure-Terraform-623CE4.svg?style=flat&logo=terraform)](https://www.terraform.io/)
+[![Backend: Node.js](https://img.shields.io/badge/Backend-Node.js-339933.svg?style=flat&logo=node.js)](https://nodejs.org/)
+[![Frontend: React](https://img.shields.io/badge/Frontend-React-61DAFB.svg?style=flat&logo=react)](https://reactjs.org/)
+
+Shoply Neon is a scalable, highly available e-commerce platform built with a cloud-native architecture on AWS. It leverages Infrastructure as Code (IaC) to automate the deployment of a full-stack application.
+
+## 🏗️ Project Structure
+
+```text
 /
-├── app/                              # Backend en Node.js 
+├── backend/                          # Node.js Express API
 │   ├── src/
-│   │   ├── domain/                   # Capa 1: Entidades (Product, User, Cart)
-│   │   ├── application/              # Capa 2: Casos de uso (AddToCart, ProcessPayment )
-│   │   ├── interfaces/               # Capa 3: Controladores (Reciben requests, envían responses)
-│   │   ├── infrastructure/           # Capa 4: Frameworks y herramientas externas
-│   │   │   ├── web/                  # Servidor Express.js y middlewares 
-│   │   │   ├── database/             # Modelos de Sequelize y configuración de conexión 
-│   │   │   └── aws/                  # Servicios externos (Ej. SDK para S3 si se usa para imágenes )
-│   │   └── index.js                  # Punto de entrada de la aplicación
-│   ├── package.json
-│   └── .env.example                  # Variables de entorno requeridas
+│   │   ├── config/                   # Database & Cloud configurations
+│   │   ├── controllers/              # Request handlers
+│   │   ├── middleware/               # Auth & Upload filters
+│   │   ├── models/                   # Sequelize (MySQL) schemas
+│   │   └── routes/                   # API endpoint definitions
+│   └── package.json
 │
-├── frontend/                         # Frontend estático (HTML, CSS, JS )
-│   ├── public/                       # Assets, imágenes, estilos minimalistas 
-│   └── index.html
+├── frontend/                         # React + Vite Application
+│   ├── src/
+│   │   ├── components/               # Reusable UI components
+│   │   ├── pages/                    # Main view components
+│   │   ├── services/                 # API communication logic
+│   │   └── App.jsx                   # Root component
+│   └── package.json
 │
-├── terraform/                        # Infraestructura como Código (Reemplaza CloudFormation)
-│   ├── modules/                      # Módulos reutilizables para mantener el código limpio
-│   │   ├── networking/               # VPC, Subnets (Públicas/Privadas), IGW, NAT Gateway 
-│   │   ├── compute/                  # ALB, Auto Scaling Group (Max 9), EC2 Bastion 
-│   │   ├── database/                 # RDS (t3.micro/medium, Single-AZ) 
-│   │   ├── security/                 # Security Groups, IAM Roles (Considerando Read-only )
-│   │   └── observability/            # CloudWatch Alarms, SNS, CloudTrail 
-│   ├── environments/
-│   │   └── sandbox/                  # Variables específicas para el entorno del proyecto
-│   │       ├── main.tf               # Invocación de módulos
-│   │       ├── variables.tf
-│   │       └── terraform.tfvars
-│   └── providers.tf                  # Configuración del provider de AWS
+├── terraform/                        # Infrastructure as Code
+│   ├── modules/                      # Reusable infrastructure blocks
+│   │   ├── networking/               # VPC, Subnets, IGW, NAT
+│   │   ├── compute/                  # EC2, ASG, ALB, Security Groups
+│   │   ├── database/                 # RDS (MySQL)
+│   │   ├── storage/                  # S3 Buckets
+│   │   └── observability/            # CloudWatch Alarms & SNS
+│   └── environments/
+│       └── sandbox/                  # Environment-specific config
 │
-├── scripts/                          # User Data para EC2 y automatización 
-│   └── install_app.sh                # Script para instalar Node, dependencias y arrancar la app en EC2
+├── scripts/                          # Automation & Testing scripts
+│   ├── install_app_ec2.sh            # User Data: Automated EC2 setup
+│   └── stress_test.sh                # Load testing for Auto Scaling
 │
-├── docs/                             # Documentación solicitada 
-│   └── deployment_guide.md
-│
-└── README.md
-
+└── docs/                             # Project Documentation
+    ├── infrastructure.md             # Detailed architecture explanation
+    ├── deployment_guide.md           # Step-by-step setup
+    └── delirable.md                  # Project evaluation answers
 ```
 
-Infrastructure Diagram
+## 🚀 Key Features
 
-<img width="2240" height="1600" alt="Blank diagram" src="https://github.com/user-attachments/assets/f65c91d9-3f0e-46d2-aef2-cf40732ebe31" />
+- **Automated Scaling:** Uses AWS Auto Scaling to handle traffic fluctuations.
+- **High Availability:** Deployed across multiple Availability Zones.
+- **Secure Networking:** Application and Database tiers are isolated in private subnets.
+- **Centralized Monitoring:** CloudWatch alarms for health and performance tracking.
+- **Automated Deployment:** From infrastructure to application setup using Terraform and Bash scripts.
+
+## 🛠️ Tech Stack
+
+- **Cloud:** AWS (EC2, ALB, ASG, RDS, S3, CloudWatch)
+- **IaC:** Terraform
+- **Backend:** Node.js, Express, Sequelize
+- **Database:** MySQL (Amazon RDS)
+- **Frontend:** React, Tailwind CSS
+- **Proxy/Web Server:** Nginx, PM2
+
+## 📖 Documentation
+
+For more details, please refer to the files in the `docs/` directory:
+
+- [Infrastructure Overview](docs/infrastructure.md)
+- [Deployment Guide](docs/deployment_guide.md)
+- [Deliverable Report](docs/delirable.md)
+
+---

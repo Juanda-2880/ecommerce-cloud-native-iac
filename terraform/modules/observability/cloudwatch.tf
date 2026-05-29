@@ -2,12 +2,12 @@
 resource "aws_cloudwatch_metric_alarm" "high_cpu" {
   alarm_name          = "${var.project_name}-high-cpu-${var.environment}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = "1" # Reduced from 2 for instant scaling
+  evaluation_periods  = "1"
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
   period              = "60"
-  statistic           = "Average"
-  threshold           = "50" # Lowered from 70% to 50% for aggressive testing
+  statistic           = "Maximum"
+  threshold           = "50"
   alarm_description   = "This metric monitors ec2 cpu utilization"
   alarm_actions       = compact([aws_sns_topic.alerts.arn, var.scale_up_policy_arn])
   treat_missing_data  = "notBreaching"
@@ -25,7 +25,7 @@ resource "aws_cloudwatch_metric_alarm" "low_cpu" {
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
   period              = "60"
-  statistic           = "Average"
+  statistic           = "Maximum"
   threshold           = "30"
   alarm_description   = "This metric monitors ec2 cpu utilization for scale down"
   alarm_actions       = compact([aws_sns_topic.alerts.arn, var.scale_down_policy_arn])

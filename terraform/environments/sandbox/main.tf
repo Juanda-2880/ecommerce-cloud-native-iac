@@ -67,7 +67,7 @@ module "observability" {
   project_name          = var.project_name
   environment           = var.environment
   alert_email           = var.alert_email
-  asg_name              = "app-asg" # From compute module asg.tf
+  asg_name              = module.compute.asg_name
   logs_bucket_id        = module.storage.logs_bucket_id
   logs_bucket_policy_id = "null" # Bypassing policy dependency check for Lab environment
   db_instance_id        = module.database.db_instance_id

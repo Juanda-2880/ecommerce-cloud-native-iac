@@ -23,3 +23,7 @@ output "alb_arn_suffix" {
 output "target_group_arn_suffix" {
   value = aws_lb_target_group.alb_ec2_tg.arn_suffix
 }
+
+output "asg_name" {
+  value = aws_autoscaling_group.app_asg.name
+}
