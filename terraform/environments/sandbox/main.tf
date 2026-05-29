@@ -71,6 +71,11 @@ module "observability" {
   logs_bucket_id        = module.storage.logs_bucket_id
   logs_bucket_policy_id = "null" # Bypassing policy dependency check for Lab environment
   db_instance_id        = module.database.db_instance_id
+  
+  scale_up_policy_arn     = module.compute.scale_up_policy_arn
+  scale_down_policy_arn   = module.compute.scale_down_policy_arn
+  alb_arn_suffix          = module.compute.alb_arn_suffix
+  target_group_arn_suffix = module.compute.target_group_arn_suffix
 }
 
 // AUTOMATION OF THE DB CONECTION WITH THE BACKEND

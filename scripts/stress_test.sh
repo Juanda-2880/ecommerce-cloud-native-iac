@@ -17,15 +17,19 @@ fi
 CPU_CORES=$(nproc)
 echo "Detected $CPU_CORES CPU cores."
 
-# Stress duration (default 10 minutes)
-DURATION=${1:-600}
+# Stress duration (default 15 minutes to ensure alarm evaluates multiple times)
+DURATION=${1:-900}
 
-echo "Generating high CPU load for $DURATION seconds..."
+echo "Generating AGGRESSIVE load for $DURATION seconds..."
+echo "Simulating: CPU, Memory, and I/O stress."
 echo "Monitoring should trigger 'high-cpu' alarm in CloudWatch."
 
-# Run stress: --cpu spawns workers spinning on sqrt()
-# We use slightly more workers than cores to ensure 100% utilization
-sudo stress --cpu $((CPU_CORES + 1)) --timeout ${DURATION}s
+# Run stress with extreme parameters:
+# --cpu: Spawn workers spinning on sqrt()
+# --io: Spawn workers spinning on sync()
+# --vm: Spawn workers spinning on malloc()/free()
+# --vm-bytes: Each VM worker uses 256M
+sudo stress --cpu $((CPU_CORES * 2)) --io 4 --vm 2 --vm-bytes 256M --timeout ${DURATION}s
 
 echo "=== Stress Test Complete ==="
 echo "Wait a few minutes for the ASG to scale down if no further load is detected."

@@ -42,4 +42,8 @@ resource "aws_launch_template" "ec2_lt" {
             Name = "App-Server"
         }
     }
+
+    monitoring {
+        enabled = true
+    }
 }

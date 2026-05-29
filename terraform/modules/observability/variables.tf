@@ -39,3 +39,15 @@ variable "db_instance_id" {
   type        = string
   description = "Identifier of the RDS instance"
 }
+
+variable "scale_up_policy_arn" {
+  type        = string
+  description = "ARN of the scale up policy"
+  default     = ""
+}
+
+variable "scale_down_policy_arn" {
+  type        = string
+  description = "ARN of the scale down policy"
+  default     = ""
+}
