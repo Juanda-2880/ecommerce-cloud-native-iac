@@ -38,6 +38,7 @@ EOT
 
 # Start Backend using PM2 for persistence
 npm install -g pm2
+pm2 delete backend || true
 pm2 start src/index.js --name "backend"
 
 # Setup Frontend

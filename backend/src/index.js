@@ -25,6 +25,10 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
+app.use((req, res, next) => {
+  res.setHeader('X-App-Version', '1.1.0-fixed-auth');
+  next();
+});
 app.use('/uploads', express.static('uploads'));
 
 const startServer = async () => {
