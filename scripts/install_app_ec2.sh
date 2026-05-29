@@ -27,6 +27,7 @@ npm install --omit=dev
 # Inject Environment Variables from Terraform
 cat <<EOT > .env
 DB_HOST=${db_host}
+DB_PORT=${db_port}
 DB_USER=${db_user}
 DB_PASS=${db_pass}
 DB_NAME=${db_name}
@@ -58,6 +59,15 @@ server {
 
     location /api/ {
         proxy_pass http://localhost:5000/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+    }
+
+    location /uploads/ {
+        proxy_pass http://localhost:5000/uploads/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection 'upgrade';

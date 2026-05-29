@@ -135,8 +135,8 @@ const updateProduct = async (req, res) => {
     const { name, description, price_cop, quantity, product_condition, is_negotiable, is_published } = req.body;
     const seller_id = req.user.id;
 
-    // If a file was uploaded, use its S3 URL
-    const final_image_url = req.file ? req.file.location : req.body.image_url;
+    // For local storage, construct the URL using the filename
+    const final_image_url = req.file ? `/uploads/${req.file.filename}` : req.body.image_url;
 
     const product = await Product.findByPk(id);
     if (!product) {

@@ -40,7 +40,8 @@ module "compute" {
     instance_type = var.instance_type
     
     # Pass variables for User Data interpolation
-    db_host      = module.database.db_endpoint
+    db_host      = module.database.db_address
+    db_port      = module.database.db_port
     db_user      = var.db_username
     db_pass      = var.db_password
     db_name      = var.db_name
@@ -68,6 +69,7 @@ module "observability" {
   asg_name              = "app-asg" # From compute module asg.tf
   logs_bucket_id        = module.storage.logs_bucket_id
   logs_bucket_policy_id = "null" # Bypassing policy dependency check for Lab environment
+  db_instance_id        = module.database.db_instance_id
 }
 
 // AUTOMATION OF THE DB CONECTION WITH THE BACKEND

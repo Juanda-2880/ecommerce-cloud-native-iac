@@ -31,7 +31,7 @@ resource "aws_db_instance" "principal_rds" {
     backup_window = "03:00-04:00"
     maintenance_window = "Mon:04:00-Mon:05:00"
     auto_minor_version_upgrade = true
-    monitoring_interval = 0
+    monitoring_interval = var.monitoring_interval
     monitoring_role_arn = null
     performance_insights_enabled = false
     enabled_cloudwatch_logs_exports = var.enabled_cloudwatch_logs_exports

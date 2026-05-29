@@ -27,6 +27,7 @@ resource "aws_launch_template" "ec2_lt" {
     
     user_data = base64encode(templatefile("${path.module}/../../../scripts/install_app_ec2.sh", {
         db_host      = var.db_host
+        db_port      = var.db_port
         db_user      = var.db_user
         db_pass      = var.db_pass
         db_name      = var.db_name
