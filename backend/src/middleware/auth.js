@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET || 'your_fallback_secret_key_123';
+
+const getJwtSecret = () => process.env.JWT_SECRET || 'your_fallback_secret_key_123';
 
 const authenticateToken = (req, res, next) => {
   const token = req.cookies.token || req.headers['authorization']?.split(' ')[1];
@@ -7,7 +8,7 @@ const authenticateToken = (req, res, next) => {
   if (!token) return res.status(401).json({ error: 'Access denied' });
 
   try {
-    const verified = jwt.verify(token, JWT_SECRET);
+    const verified = jwt.verify(token, getJwtSecret());
     req.user = verified;
     next();
   } catch (err) {
@@ -15,4 +16,4 @@ const authenticateToken = (req, res, next) => {
   }
 };
 
-module.exports = { authenticateToken, JWT_SECRET };
+module.exports = { authenticateToken, getJwtSecret };

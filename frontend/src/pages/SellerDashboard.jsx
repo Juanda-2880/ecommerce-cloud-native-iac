@@ -113,7 +113,13 @@ const SellerDashboard = () => {
             })
             fetchProducts()
         } catch (error) {
-            showNotification(error.response?.data?.error || 'Deployment failure', 'error')
+            const errorMsg = error.response?.data?.error || 'Deployment failure';
+            showNotification(errorMsg, 'error')
+            if (errorMsg === 'Invalid token') {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                setTimeout(() => window.location.href = '/login', 2000);
+            }
         }
     }
 

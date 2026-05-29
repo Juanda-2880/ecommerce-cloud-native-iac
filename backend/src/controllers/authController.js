@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User, Buyer, Salesperson, sequelize } = require('../models');
-const { JWT_SECRET } = require('../middleware/auth');
+const { getJwtSecret } = require('../middleware/auth');
 
 const signup = async (req, res) => {
   const { username, email, password, role } = req.body;
@@ -47,7 +47,7 @@ const signup = async (req, res) => {
     await t.commit();
 
     // Auto-login after signup
-    const token = jwt.sign({ id: user.id, username, role }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, username, role }, getJwtSecret(), { expiresIn: '1h' });
 
     res.cookie('token', token, { httpOnly: true }).status(201).json({
       message: 'User registered and logged in successfully!',
@@ -80,7 +80,7 @@ const login = async (req, res) => {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
 
-    const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, getJwtSecret(), { expiresIn: '1h' });
 
     res.cookie('token', token, { httpOnly: true }).json({
       message: 'Logged in successfully!',
