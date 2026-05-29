@@ -1,7 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+
+console.log('Environment Check: JWT_SECRET is', process.env.JWT_SECRET ? `SET (length: ${process.env.JWT_SECRET.trim().length})` : 'NOT SET');
 
 const { initDB } = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
@@ -13,8 +16,9 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
+const allowedOrigin = process.env.FRONTEND_URL || true;
 app.use(cors({
-  origin: true, // Allow all origins but echo them back (necessary for credentials)
+  origin: allowedOrigin,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
