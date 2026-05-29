@@ -1,8 +1,3 @@
-# Cloud Architecture Diagram
-
-This diagram represents the high-level architecture of the Shoply Neon e-commerce platform on AWS.
-
-```mermaid
 graph TD
     subgraph "AWS Cloud"
         subgraph "VPC (10.0.0.0/16)"
@@ -63,18 +58,3 @@ graph TD
     
     class ALB,ASG,EC2_1,EC2_2,RDS aws;
     class S3_Logs,S3_Products,CW,SNS storage;
-```
-
-## Component Description
-
-| Component | Description |
-| :--- | :--- |
-| **Internet Gateway** | Entry point for all public traffic to the VPC. |
-| **Application Load Balancer** | Distributes incoming traffic across EC2 instances in the Auto Scaling Group. |
-| **Auto Scaling Group** | Automatically manages the number of EC2 instances based on traffic demand. |
-| **EC2 Instances** | Host the Node.js backend and React frontend (Nginx/PM2). |
-| **NAT Gateway** | Allows instances in private subnets to securely access the internet (e.g., for updates). |
-| **Amazon RDS (MySQL)** | Managed relational database for application data. |
-| **Amazon S3** | Object storage for product images and application logs. |
-| **CloudWatch** | Monitors system health and triggers scaling or alerts. |
-| **SNS Topic** | Sends email notifications for system alerts. |
