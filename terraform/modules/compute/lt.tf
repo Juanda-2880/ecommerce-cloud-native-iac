@@ -17,7 +17,7 @@ resource "aws_launch_template" "ec2_lt" {
     instance_type = var.instance_type
     
     iam_instance_profile {
-        name = var.iam_instance_profile
+        arn = var.iam_instance_profile
     }
 
     network_interfaces {
@@ -33,6 +33,7 @@ resource "aws_launch_template" "ec2_lt" {
         db_name      = var.db_name
         mp_token     = var.mp_token
         frontend_url = var.frontend_url
+        jwt_secret   = var.jwt_secret
     }))
     
     tag_specifications {

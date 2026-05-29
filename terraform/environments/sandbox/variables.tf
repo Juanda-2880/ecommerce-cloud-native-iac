@@ -192,6 +192,13 @@ variable "environment" {
   default     = "sandbox"
 }
 
+variable "jwt_secret" {
+  description = "Secret key for JWT"
+  type        = string
+  sensitive   = true
+  default     = "super_secret_cyber_key_2026"
+}
+
 variable "alert_email" {
   description = "Email address for alerts"
   type        = string

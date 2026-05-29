@@ -30,5 +30,6 @@ instance_type = "t3.micro"
 # Removed ssh_key_name as requested
 
 alert_email = "juandau.2880@gmail.com"
+jwt_secret = "ShoplyNeonSecurityKey2026!#"
 project_name = "shoply-neon-4803740"
 environment = "sandbox"

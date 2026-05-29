@@ -51,7 +51,6 @@ resource "aws_cloudwatch_metric_alarm" "app_errors_alarm" {
 
 # Alarm: High CPU for RDS
 resource "aws_cloudwatch_metric_alarm" "rds_high_cpu" {
-  count               = var.db_instance_id != "" ? 1 : 0
   alarm_name          = "${var.project_name}-rds-high-cpu-${var.environment}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "2"

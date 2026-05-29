@@ -54,6 +54,10 @@ variable "frontend_url" {
     type = string
 }
 
+variable "jwt_secret" {
+    type = string
+}
+
 variable "iam_instance_profile" {
     type = string
 }

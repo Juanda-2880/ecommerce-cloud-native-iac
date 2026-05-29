@@ -31,9 +31,9 @@ variable "db_engine" {
 }
 
 variable "monitoring_interval" {
-  description = "Interval for Enhanced Monitoring in seconds. Default is 60 seconds."
+  description = "Interval for Enhanced Monitoring in seconds. Set to 0 to disable."
   type        = number
-  default     = 60
+  default     = 0
 }
 
 variable "db_engine_version" {

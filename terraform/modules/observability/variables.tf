@@ -38,5 +38,4 @@ variable "target_group_arn_suffix" {
 variable "db_instance_id" {
   type        = string
   description = "Identifier of the RDS instance"
-  default     = ""
 }

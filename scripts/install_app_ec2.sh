@@ -33,7 +33,7 @@ DB_PASS=${db_pass}
 DB_NAME=${db_name}
 MP_ACCESS_TOKEN=${mp_token}
 FRONTEND_URL=${frontend_url}
-JWT_SECRET=supersecretkey_$(date +%s)
+JWT_SECRET=${jwt_secret}
 EOT
 
 # Start Backend using PM2 for persistence
@@ -64,6 +64,9 @@ server {
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host \$host;
         proxy_cache_bypass \$http_upgrade;
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
     }
 
     location /uploads/ {
@@ -73,9 +76,15 @@ server {
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host \$host;
         proxy_cache_bypass \$http_upgrade;
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
     }
 }
 EOT
+
+# Increase Nginx client_max_body_size for image uploads
+sed -i 's/client_max_body_size .*/client_max_body_size 10M;/' /etc/nginx/nginx.conf || echo "client_max_body_size 10M;" >> /etc/nginx/nginx.conf
 
 systemctl restart nginx
 

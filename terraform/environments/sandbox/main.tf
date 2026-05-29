@@ -47,9 +47,10 @@ module "compute" {
     db_name      = var.db_name
     mp_token     = var.mp_access_token
     frontend_url = var.frontend_url
+    jwt_secret   = var.jwt_secret
 
-    # IAM Profile (Found in this lab environment)
-    iam_instance_profile = "c203071a5182623l14631063t1w426290579043-SsmRoleInstanceProfile-69s9mlBSOnaf"
+    # IAM Profile ARN (Updated for current Lab environment session)
+    iam_instance_profile = "arn:aws:iam::426290579043:instance-profile/c203071a5182623l14631063t1w426290579043-SsmRoleInstanceProfile-BpWD7xquyv9j"
 }
 
 // PHASE 4 - STORAGE & OBSERVABILITY
@@ -76,7 +77,8 @@ module "observability" {
 
 resource "local_file" "db_conf" {
     content = <<-EOT
-    DB_HOST=${module.database.db_endpoint}
+    DB_HOST=${module.database.db_address}
+    DB_PORT=${module.database.db_port}
     DB_USER=${var.db_username}
     DB_PASS=${var.db_password}
     MP_ACCESS_TOKEN=${var.mp_access_token}
