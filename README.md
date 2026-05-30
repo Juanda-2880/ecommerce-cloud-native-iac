@@ -66,7 +66,8 @@ Shoply Neon is a scalable, highly available e-commerce platform built with a clo
 
 ## Infrastructure diagram
 
-<img src="image.png" alt="Diagrama de Terraform"/>
+<img width="3540" height="1600" alt="Blank diagram(2)" src="https://github.com/user-attachments/assets/695640d8-5b15-4f2d-83eb-377b9d5e6154" />
+
 
 
 ## 📖 Documentation
